@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -16,7 +16,7 @@
 # Put .cpp files here.
 #########################
 set(QTVTKCONTROLLER_SRCS
-  mpVolumeRenderingModel.cpp
+  goicpzVolumeRenderingModel.cpp
 )
 
 
@@ -24,7 +24,7 @@ set(QTVTKCONTROLLER_SRCS
 # Put .h files that need moc here.
 ###################################
 SET(QTVTKCONTROLLER_MOC_HDRS
-  mpVolumeRenderingModel.h
+  goicpzVolumeRenderingModel.h
 )
 
 
@@ -32,7 +32,7 @@ SET(QTVTKCONTROLLER_MOC_HDRS
 # Put .h files that do not need moc here.
 ##########################################
 SET(QTVTKCONTROLLER_HDRS
-  mpQtVTKModelWin32ExportHeader.h
+  goicpzQtVTKModelWin32ExportHeader.h
 )
 
 
@@ -68,9 +68,9 @@ add_library(qtvtkmodel
 #################################
 if(BUILD_SHARED_LIBS)
   if(WIN32)
-    add_definitions(-DMYPROJECT_QTVTKMODEL_WINDOWS_EXPORT)
+    add_definitions(-DGOICPZ_QTVTKMODEL_WINDOWS_EXPORT)
   endif(WIN32)
-  MYPROJECT_INSTALL_LIBRARY(qtvtkmodel)
+  GOICPZ_INSTALL_LIBRARY(qtvtkmodel)
 endif(BUILD_SHARED_LIBS)
 
 

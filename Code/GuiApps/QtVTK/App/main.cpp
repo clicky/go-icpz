@@ -1,6 +1,6 @@
 /*=============================================================================
 
-  MYPROJECT: A software package for whatever.
+  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 
   Copyright (c) University College London (UCL). All rights reserved.
 
@@ -13,8 +13,8 @@
 =============================================================================*/
 
 #include <QVTKApplication.h>
-#include "mpMainWindow.h"
-#include <mpVolumeRenderingModel.h>
+#include "goicpzMainWindow.h"
+#include <goicpzVolumeRenderingModel.h>
 #include <QScopedPointer>
 
 #ifdef BUILD_VTK_OpenGL2
@@ -36,9 +36,9 @@ int main(int argc, char** argv)
   app.setOrganizationName("UCL");
   app.setApplicationName("Example QtVTK app.");
 
-  QScopedPointer<mp::VolumeRenderingModel> mb(new mp::VolumeRenderingModel());
+  QScopedPointer<goicpz::VolumeRenderingModel> mb(new goicpz::VolumeRenderingModel());
 
-  mp::MainWindow mainWin(mb.data());
+  goicpz::MainWindow mainWin(mb.data());
 
   mainWin.show();
   mainWin.ConnectRenderer();

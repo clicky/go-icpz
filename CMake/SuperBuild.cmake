@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -46,12 +46,12 @@ set(EP_BASE "${CMAKE_BINARY_DIR}" CACHE PATH "Directory where the external proje
 set_property(DIRECTORY PROPERTY EP_BASE ${EP_BASE})
 
 # This option makes different versions of the same external project build in separate directories.
-# This allows switching branches in the MYPROJECT source code and build MYPROJECT quickly, even if the
+# This allows switching branches in the GOICPZ source code and build GOICPZ quickly, even if the
 # branches use different versions of the same library. A given version of an EP will be built only
 # once. A drawback is that the EP_BASE directory can become big easily.
 # Note:
 # If you switch branches that need different versions of EPs, you might need to delete the
-# MYPROJECT-configure timestamp manually before doing a superbuild. Without that the CMake cache is
+# GOICPZ-configure timestamp manually before doing a superbuild. Without that the CMake cache is
 # not regenerated and it may still store the paths to the EP versions that belong to the original
 # branch (from which you switched). You have been warned.
 
@@ -121,7 +121,7 @@ set(EP_COMMON_ARGS
   -DCMAKE_C_COMPILER:FILEPATH=${CMAKE_C_COMPILER}
   -DCMAKE_CXX_COMPILER:FILEPATH=${CMAKE_CXX_COMPILER}
   -DCMAKE_C_FLAGS:STRING=${CMAKE_C_FLAGS}
-  "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} ${MYPROJECT_CXX11_FLAG}"
+  "-DCMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} ${GOICPZ_CXX11_FLAG}"
   #debug flags
   -DCMAKE_CXX_FLAGS_DEBUG:STRING=${CMAKE_CXX_FLAGS_DEBUG}
   -DCMAKE_C_FLAGS_DEBUG:STRING=${CMAKE_C_FLAGS_DEBUG}
@@ -137,7 +137,7 @@ set(EP_COMMON_ARGS
   -DCMAKE_MODULE_LINKER_FLAGS:STRING=${CMAKE_MODULE_LINKER_FLAGS}
 )
 
-set(MYPROJECT_SUPERBUILD_DEBUG_POSTFIX d)
+set(GOICPZ_SUPERBUILD_DEBUG_POSTFIX d)
 list(APPEND EP_COMMON_ARGS -DCMAKE_DEBUG_POSTFIX:STRING=d)
 
 set(EP_COMMON_CACHE_DEFAULT_ARGS
@@ -171,9 +171,9 @@ endforeach()
 
 
 ######################################################################
-# Now compile MYPROJECT, using the packages we just provided.
+# Now compile GOICPZ, using the packages we just provided.
 ######################################################################
-if(NOT DEFINED SUPERBUILD_EXCLUDE_MYPROJECTBUILD_TARGET OR NOT SUPERBUILD_EXCLUDE_MYPROJECTBUILD_TARGET)
+if(NOT DEFINED SUPERBUILD_EXCLUDE_GOICPZBUILD_TARGET OR NOT SUPERBUILD_EXCLUDE_GOICPZBUILD_TARGET)
 
   set(_install_rpath)
   if(APPLE)
@@ -183,7 +183,7 @@ if(NOT DEFINED SUPERBUILD_EXCLUDE_MYPROJECTBUILD_TARGET OR NOT SUPERBUILD_EXCLUD
     set(_install_rpath "\$ORIGIN")
   endif()
 
-  set(proj MYPROJECT)
+  set(proj GOICPZ)
   set(proj_DEPENDENCIES ${OpenCV_DEPENDS} ${Eigen_DEPENDS} ${Boost_DEPENDS} ${gflags_DEPENDS} ${glog_DEPENDS} ${VTK_DEPENDS} ${FLANN_DEPENDS} ${PCL_DEPENDS})
 
   ExternalProject_Add(${proj}
@@ -197,20 +197,20 @@ if(NOT DEFINED SUPERBUILD_EXCLUDE_MYPROJECTBUILD_TARGET OR NOT SUPERBUILD_EXCLUD
     CMAKE_ARGS
       ${EP_COMMON_ARGS}
       -DCMAKE_DEBUG_POSTFIX:STRING=
-      -DCMAKE_PREFIX_PATH:PATH=${MYPROJECT_PREFIX_PATH}
-      -DMYPROJECT_SUPERBUILD_DEBUG_POSTFIX:STRING=${MYPROJECT_SUPERBUILD_DEBUG_POSTFIX}
+      -DCMAKE_PREFIX_PATH:PATH=${GOICPZ_PREFIX_PATH}
+      -DGOICPZ_SUPERBUILD_DEBUG_POSTFIX:STRING=${GOICPZ_SUPERBUILD_DEBUG_POSTFIX}
     CMAKE_CACHE_ARGS
       ${EP_COMMON_CACHE_ARGS}
       -DCMAKE_LIBRARY_PATH:PATH=${CMAKE_LIBRARY_PATH}
       -DCMAKE_INCLUDE_PATH:PATH=${CMAKE_INCLUDE_PATH}
-      -DMYPROJECT_EXTERNAL_PROJECT_PREFIX:PATH=${ep_prefix}
-      -DMYPROJECT_USE_KWSTYLE:BOOL=${MYPROJECT_USE_KWSTYLE}
-      -DMYPROJECT_USE_CPPCHECK:BOOL=${MYPROJECT_USE_CPPCHECK}
-      -DMYPROJECT_USE_QT:BOOL=${MYPROJECT_USE_QT}
+      -DGOICPZ_EXTERNAL_PROJECT_PREFIX:PATH=${ep_prefix}
+      -DGOICPZ_USE_KWSTYLE:BOOL=${GOICPZ_USE_KWSTYLE}
+      -DGOICPZ_USE_CPPCHECK:BOOL=${GOICPZ_USE_CPPCHECK}
+      -DGOICPZ_USE_QT:BOOL=${GOICPZ_USE_QT}
       -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_INSTALL_PREFIX}
       "-DCMAKE_INSTALL_RPATH:STRING=${_install_rpath}"
       -DCMAKE_VERBOSE_MAKEFILE:BOOL=${CMAKE_VERBOSE_MAKEFILE}
-      -DBUILD_TESTING:BOOL=${BUILD_TESTING} # The value set in EP_COMMON_ARGS normally forces this off, but we may need MYPROJECT to be on.
+      -DBUILD_TESTING:BOOL=${BUILD_TESTING} # The value set in EP_COMMON_ARGS normally forces this off, but we may need GOICPZ to be on.
       -DBUILD_SUPERBUILD:BOOL=OFF           # Must force this to be off, or else you will loop forever.
       -DWITHIN_SUBBUILD:BOOL=ON
       -DBUILD_QTVTKGUI:BOOL=${BUILD_QTVTKGUI}

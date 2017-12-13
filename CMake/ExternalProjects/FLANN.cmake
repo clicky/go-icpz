@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -42,7 +42,7 @@ if(NOT DEFINED FLANN_DIR)
     CMAKE_GENERATOR ${gen}
     CMAKE_ARGS
       ${EP_COMMON_ARGS}
-      -DCMAKE_PREFIX_PATH:PATH=${MYPROJECT_PREFIX_PATH}
+      -DCMAKE_PREFIX_PATH:PATH=${GOICPZ_PREFIX_PATH}
       -DBUILD_MATLAB_BINDINGS:BOOL=OFF
       -DBUILD_PYTHON_BINDINGS:BOOL=OFF
       -DBUILD_TESTS:BOOL=OFF
@@ -57,7 +57,7 @@ if(NOT DEFINED FLANN_DIR)
   set(FLANN_DIR ${proj_INSTALL})
   set(FLANN_ROOT ${FLANN_DIR})
 
-  set(MYPROJECT_PREFIX_PATH ${proj_INSTALL}^^${MYPROJECT_PREFIX_PATH})
+  set(GOICPZ_PREFIX_PATH ${proj_INSTALL}^^${GOICPZ_PREFIX_PATH})
   mitkFunctionInstallExternalCMakeProject(${proj})
 
   message("SuperBuild loading FLANN from ${FLANN_DIR}")

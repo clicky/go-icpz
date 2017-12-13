@@ -72,5 +72,5 @@ script:
   - cd build
   - CXX="g++-4.8" CC="gcc-4.8" ../bin/cmake -DBUILD_SUPERBUILD:BOOL=ON -DBUILD_TESTING:BOOL=ON -DBUILD_Boost:BOOL=ON -DBUILD_Eigen:BOOL=ON -DBUILD_glog:BOOL=ON -DBUILD_gflags:BOOL=ON -DBUILD_VTK:BOOL=OFF -DBUILD_PCL:BOOL=OFF -DBUILD_OpenCV:BOOL=OFF ..
   - make
-  - cd MYPROJECT-build
+  - cd GOICPZ-build
   - ctest .

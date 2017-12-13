@@ -1,9 +1,9 @@
-MYPROJECT README.
+GOICPZ README.
 -----------------
 
-This is the @MYPROJECT_PACKAGE_NAME@ software for whatever, version @MYPROJECT_VERSION_STRING@.
+This is the @GOICPZ_PACKAGE_NAME@ software for whatever, version @GOICPZ_VERSION_STRING@.
 
-For all questions and queries please contact: @MYPROJECT_CONTACT@.
+For all questions and queries please contact: @GOICPZ_CONTACT@.
 
 
 Welcome

@@ -15,18 +15,18 @@
 set(APP_NAME QtVTKApp)
 
 set(APP_UIS
-  mpMainWindow.ui
-  mpCentralWidget.ui
+  goicpzMainWindow.ui
+  goicpzCentralWidget.ui
 )
 
 set(APP_SRCS
-  mpMainWindow.cpp
-  mpCentralWidget.cpp
+  goicpzMainWindow.cpp
+  goicpzCentralWidget.cpp
 )
 
 set(APP_MOC_HDRS
-  mpMainWindow.h
-  mpCentralWidget.h
+  goicpzMainWindow.h
+  goicpzCentralWidget.h
 )
 
 set(APP_HDRS
@@ -53,7 +53,7 @@ add_executable(${APP_NAME} MACOSX_BUNDLE
 )
 
 set(APP_LIBS
-  myproject
+  goicpz
   qtvtkmodel
   qtvtkview
   qtvtkcontroller

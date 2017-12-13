@@ -1,14 +1,14 @@
 /**
 
-\mainpage The MYPROJECT (@MYPROJECT_VERSION_MAJOR@.@MYPROJECT_VERSION_MINOR@.@MYPROJECT_VERSION_PATCH@) Documentation
+\mainpage The GOICPZ (@GOICPZ_VERSION_MAJOR@.@GOICPZ_VERSION_MINOR@.@GOICPZ_VERSION_PATCH@) Documentation
 
 Copyright (C) 2017 University College London (UCL). All rights reserved.
 
-\subpage MYPROJECTLicense
+\subpage GOICPZLicense
 
 \section MainPageIntro Introduction
 
-MYPROJECT is a software library to perform whatever.
+GOICPZ is a software library to perform whatever.
 
 Further information can be obtained via
 

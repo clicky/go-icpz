@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -13,11 +13,11 @@
 #============================================================================*/
 
 set(_command_line_apps
-  mpMyFirstApp
+  goicpzMyFirstApp
 )
 
 foreach(_app ${_command_line_apps})
   add_executable(${_app} ${_app}.cpp)
-  target_link_libraries(${_app} myproject ${ALL_THIRD_PARTY_LIBRARIES})
-  MYPROJECT_INSTALL_CL(TARGETS ${_app})
+  target_link_libraries(${_app} goicpz ${ALL_THIRD_PARTY_LIBRARIES})
+  GOICPZ_INSTALL_CL(TARGETS ${_app})
 endforeach()

@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -16,12 +16,12 @@ set(DATA_DIR ${CMAKE_SOURCE_DIR}/Testing/Data)
 set(TMP_DIR ${CMAKE_BINARY_DIR}/Testing/Temporary)
 
 set(TEST_CASES
-  mpBasicTest
-  mpCommandLineArgsTest
+  goicpzBasicTest
+  goicpzCommandLineArgsTest
 )
 
 foreach(_test_case ${TEST_CASES})
-  add_executable(${_test_case} ${_test_case}.cpp mpCatchMain.cpp)
+  add_executable(${_test_case} ${_test_case}.cpp goicpzCatchMain.cpp)
   target_link_libraries(${_test_case} ${ALL_LIBRARIES})
 endforeach()
 
@@ -32,5 +32,5 @@ endforeach()
 # Dont forget its:  add_test(<test name (globally unique) > <exe name> <argument1> <argument2>
 ##################################################################################################
 
-add_test(NoArgs ${EXECUTABLE_OUTPUT_PATH}/mpBasicTest)
-add_test(1File ${EXECUTABLE_OUTPUT_PATH}/mpCommandLineArgsTest ${DATA_DIR}/input.txt)
+add_test(NoArgs ${EXECUTABLE_OUTPUT_PATH}/goicpzBasicTest)
+add_test(1File ${EXECUTABLE_OUTPUT_PATH}/goicpzCommandLineArgsTest ${DATA_DIR}/input.txt)

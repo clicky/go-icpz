@@ -1,12 +1,12 @@
 /**
-\page MYPROJECTLicense MYPROJECT Licenses
+\page GOICPZLicense GOICPZ Licenses
 
-\li \ref LicenseMYPROJECT
+\li \ref LicenseGOICPZ
 \li \ref LicenseEigen
 \li \ref LicenseBoost
 \li \ref LicenseOpenCV
 
-\section LicenseMYPROJECT The MYPROJECT License
+\section LicenseGOICPZ The GOICPZ License
 
 \include LICENSE.txt
 

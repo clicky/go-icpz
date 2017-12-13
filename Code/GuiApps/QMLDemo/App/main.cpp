@@ -1,6 +1,6 @@
 /*=============================================================================
 
-  MYPROJECT: A software package for whatever.
+  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 
   Copyright (c) University College London (UCL). All rights reserved.
 

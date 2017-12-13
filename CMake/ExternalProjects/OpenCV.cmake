@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -61,7 +61,7 @@ if(NOT DEFINED OpenCV_DIR)
     CMAKE_GENERATOR ${gen}
     CMAKE_ARGS
       ${EP_COMMON_ARGS}
-      -DCMAKE_PREFIX_PATH:PATH=${MYPROJECT_PREFIX_PATH}
+      -DCMAKE_PREFIX_PATH:PATH=${GOICPZ_PREFIX_PATH}
       -DBUILD_opencv_core:BOOL=ON
       -DBUILD_opencv_calib3d:BOOL=ON
       -DBUILD_opencv_features2d:BOOL=ON
@@ -91,7 +91,7 @@ if(NOT DEFINED OpenCV_DIR)
   )
 
   set(OpenCV_DIR ${proj_INSTALL})
-  set(MYPROJECT_PREFIX_PATH ${proj_INSTALL}^^${MYPROJECT_PREFIX_PATH})
+  set(GOICPZ_PREFIX_PATH ${proj_INSTALL}^^${GOICPZ_PREFIX_PATH})
   mitkFunctionInstallExternalCMakeProject(${proj})
 
   message("SuperBuild loading OpenCV from ${OpenCV_DIR}")

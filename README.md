@@ -35,7 +35,7 @@ The main way to use this project is:
 
  1. Clone this project.
  2. Rename the top-level project folder to the folder name of your choice.
- 3. Rename all instances of ```MYPROJECT``` (all uppercase), ```myproject``` (all lowercase), ```MyProject``` (camelcase) and the namespace ```mp``` with names of your choice.
+ 3. Rename all instances of ```GOICPZ``` (all uppercase), ```goicpz``` (all lowercase), ```GoICPz``` (camelcase) and the namespace ```mp``` with names of your choice.
  4. Optionally strip out or turn off the bits you dont need.
  5. Set your KWStyle and CppCheck settings in ```Utilities/KWStyle``` and ```Utilities/CppCheck```.
  6. Check it all still builds.
@@ -91,7 +91,7 @@ This project is intended for the following 2 Use-Cases:
 
 For the first Use-Case it is recommended that you build everything statically. The packaging code will produce an
 SDK to link against, so other people can be responsible for integrating your new algorithm into their app.
-You can use non-GUI Qt, by turning on the flag MYPROJECT_USE_QT, but you should still use a version of Qt that has been compiled statically.
+You can use non-GUI Qt, by turning on the flag GOICPZ_USE_QT, but you should still use a version of Qt that has been compiled statically.
 Be aware that CMake will search around your system for various Qt libraries. If your statically compiled version of
 Qt has missing libraries, as you only compiled a subset of them, then CMake may well find other Qt libraries, possibly
 with dynamic linkage, from somewhere unexpected on your system. This will cause a problem when running CPack.
@@ -179,7 +179,7 @@ Windows Users
 
 If you build the project with shared libraries (BUILD_SHARED_LIBS:BOOL=ON)
 then after the SuperBuild has successfully completed, you should look for the batch file
-StartVS_Debug.bat or StartVS_Release.bat in the MYPROJECT-build folder.
+StartVS_Debug.bat or StartVS_Release.bat in the GOICPZ-build folder.
 This sets the path before launching Visual Studio, so that when you come to run your
 application or unit tests within Visual Studio, the dynamically
 loaded libraries are found at run time.

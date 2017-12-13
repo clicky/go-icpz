@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -59,7 +59,7 @@ if(NOT DEFINED PCL_DIR)
     CMAKE_GENERATOR ${gen}
     CMAKE_ARGS
       ${EP_COMMON_ARGS}
-      -DCMAKE_PREFIX_PATH:PATH=${MYPROJECT_PREFIX_PATH}
+      -DCMAKE_PREFIX_PATH:PATH=${GOICPZ_PREFIX_PATH}
       -DCMAKE_DEBUG_POSTFIX:STRING=
       -DBOOST_ROOT:PATH=${BOOST_ROOT}
       -DBOOST_INCLUDEDIR:PATH=${BOOST_ROOT}/include
@@ -94,7 +94,7 @@ if(NOT DEFINED PCL_DIR)
 
   set(PCL_DIR ${proj_INSTALL})
 
-  set(MYPROJECT_PREFIX_PATH ${proj_INSTALL}^^${MYPROJECT_PREFIX_PATH})
+  set(GOICPZ_PREFIX_PATH ${proj_INSTALL}^^${GOICPZ_PREFIX_PATH})
   mitkFunctionInstallExternalCMakeProject(${proj})
 
   message("SuperBuild loading PCL from ${PCL_DIR}")

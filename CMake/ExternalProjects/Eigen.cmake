@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -46,7 +46,7 @@ if(NOT DEFINED Eigen_DIR)
     CMAKE_GENERATOR ${gen}
     CMAKE_ARGS
       ${EP_COMMON_ARGS}
-      -DCMAKE_PREFIX_PATH:PATH=${MYPROJECT_PREFIX_PATH}
+      -DCMAKE_PREFIX_PATH:PATH=${GOICPZ_PREFIX_PATH}
       -DEIGEN_LEAVE_TEST_IN_ALL_TARGET=ON
     CMAKE_CACHE_ARGS
       ${EP_COMMON_CACHE_ARGS}

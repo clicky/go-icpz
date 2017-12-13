@@ -2,7 +2,7 @@
 
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -14,29 +14,29 @@
 #
 #============================================================================*/
 
-# Script which changes generic name MyProject, namespace mp etc to a project name of your choice.
+# Script which changes generic name GoICPz, namespace goicpz etc to a project name of your choice.
 # USAGE: Just change the variables prefixed by NEW below to an appropriate name then run the script.
 
 ######################################################
 ##                 EDIT THIS PART                   ##
 ######################################################
 
-NEW_PROJECT_NAME_CAMEL_CASE='MyProject'
-NEW_PROJECT_NAME_LOWER_CASE='myproject'
-NEW_PROJECT_NAME_CAPS='MYPROJECT'
-NEW_SHORT_DESCRIPTION='A software package for whatever.'
-NEW_NAMESPACE='mp'
+NEW_PROJECT_NAME_CAMEL_CASE='GoICPz'
+NEW_PROJECT_NAME_LOWER_CASE='goicpz'
+NEW_PROJECT_NAME_CAPS='GOICPZ'
+NEW_SHORT_DESCRIPTION='A software package for globally optimal implementations of the iterative closest point algorithm.'
+NEW_NAMESPACE='goicpz'
 
 
 ######################################################
 
 # Strings to replace
 OLD_DIR_NAME='CMakeCatchTemplate'
-OLD_PROJECT_NAME_CAMEL_CASE='MyProject'
-OLD_PROJECT_NAME_LOWER_CASE='myproject'
-OLD_PROJECT_NAME_CAPS='MYPROJECT'
-OLD_DOXYGEN_INTRO='A software package for whatever.'
-OLD_SHORT_DESCRIPTION='A software package for whatever.'
+OLD_PROJECT_NAME_CAMEL_CASE='GoICPz'
+OLD_PROJECT_NAME_LOWER_CASE='goicpz'
+OLD_PROJECT_NAME_CAPS='GOICPZ'
+OLD_DOXYGEN_INTRO='A software package for globally optimal implementations of the iterative closest point algorithm.'
+OLD_SHORT_DESCRIPTION='A software package for globally optimal implementations of the iterative closest point algorithm.'
 OLD_NAMESPACE='mp'
 
 #### Replacements ###
@@ -74,7 +74,7 @@ find_and_replace_string "${OLD_SHORT_DESCRIPTION}" "${NEW_SHORT_DESCRIPTION}"
 # Change Doxygen intro
 find_and_replace_string "${OLD_DOXYGEN_INTRO}" "${NEW_SHORT_DESCRIPTION}"
 
-# Replace name MyProject, myproject, MYPROJECT etc.
+# Replace name GoICPz, goicpz, GOICPZ etc.
 find_and_replace_string "$OLD_PROJECT_NAME_CAMEL_CASE" "$NEW_PROJECT_NAME_CAMEL_CASE"
 find_and_replace_string "$OLD_PROJECT_NAME_LOWER_CASE" "$NEW_PROJECT_NAME_LOWER_CASE"
 find_and_replace_string "$OLD_PROJECT_NAME_CAPS" "$NEW_PROJECT_NAME_CAPS"

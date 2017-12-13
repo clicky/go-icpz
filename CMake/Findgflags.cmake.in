@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -34,7 +34,7 @@ if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
 
 elseif(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 
-  find_library(gflags_LIBRARY NAMES gflags${MYPROJECT_SUPERBUILD_DEBUG_POSTFIX}
+  find_library(gflags_LIBRARY NAMES gflags${GOICPZ_SUPERBUILD_DEBUG_POSTFIX}
                PATHS ${gflags_LIBRARY_DIR}
                PATH_SUFFIXES Debug
                NO_DEFAULT_PATH)
@@ -47,6 +47,6 @@ if(gflags_LIBRARY AND gflags_INC)
   set(gflags_INCLUDE_DIR ${_inc_dir})
 endif()
 
-message( "MYPROJECT Findgflags.cmake: gflags_INCLUDE_DIR: ${gflags_INCLUDE_DIR}" )
-message( "MYPROJECT Findgflags.cmake: gflags_LIBRARY_DIR: ${gflags_LIBRARY_DIR}" )
-message( "MYPROJECT Findgflags.cmake: gflags_LIBRARY:     ${gflags_LIBRARY}" )
+message( "GOICPZ Findgflags.cmake: gflags_INCLUDE_DIR: ${gflags_INCLUDE_DIR}" )
+message( "GOICPZ Findgflags.cmake: gflags_LIBRARY_DIR: ${gflags_LIBRARY_DIR}" )
+message( "GOICPZ Findgflags.cmake: gflags_LIBRARY:     ${gflags_LIBRARY}" )

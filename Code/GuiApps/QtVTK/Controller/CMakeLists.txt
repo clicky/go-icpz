@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -16,8 +16,8 @@
 # Put .ui files here.
 #########################
 set(QTVTKCONTROLLER_UIS
-  mpTwinSliderWidget.ui
-  mpControlPanelWidget.ui
+  goicpzTwinSliderWidget.ui
+  goicpzControlPanelWidget.ui
 )
 
 
@@ -25,8 +25,8 @@ set(QTVTKCONTROLLER_UIS
 # Put .cpp files here.
 #########################
 set(QTVTKCONTROLLER_SRCS
-  mpTwinSliderWidget.cpp
-  mpControlPanelWidget.cpp
+  goicpzTwinSliderWidget.cpp
+  goicpzControlPanelWidget.cpp
 )
 
 
@@ -34,8 +34,8 @@ set(QTVTKCONTROLLER_SRCS
 # Put .h files that need moc here.
 ###################################
 SET(QTVTKCONTROLLER_MOC_HDRS
-  mpTwinSliderWidget.h
-  mpControlPanelWidget.h
+  goicpzTwinSliderWidget.h
+  goicpzControlPanelWidget.h
 )
 
 
@@ -43,7 +43,7 @@ SET(QTVTKCONTROLLER_MOC_HDRS
 # Put .h files that do not need moc here.
 ##########################################
 SET(QTVTKCONTROLLER_HDRS
-  mpQtVTKControllerWin32ExportHeader.h
+  goicpzQtVTKControllerWin32ExportHeader.h
 )
 
 
@@ -80,9 +80,9 @@ add_library(qtvtkcontroller
 #################################
 if(BUILD_SHARED_LIBS)
   if(WIN32)
-    add_definitions(-DMYPROJECT_QTVTKCONTROLLER_WINDOWS_EXPORT)
+    add_definitions(-DGOICPZ_QTVTKCONTROLLER_WINDOWS_EXPORT)
   endif(WIN32)
-  MYPROJECT_INSTALL_LIBRARY(qtvtkcontroller)
+  GOICPZ_INSTALL_LIBRARY(qtvtkcontroller)
 endif(BUILD_SHARED_LIBS)
 
 

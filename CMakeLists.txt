@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -15,8 +15,8 @@
 ######################################################################
 # Set the minimum CMake version.
 ######################################################################
-set(MYPROJECT_CMAKE_MINIMUM_REQUIRED_VERSION 3.5)
-cmake_minimum_required(VERSION ${MYPROJECT_CMAKE_MINIMUM_REQUIRED_VERSION})
+set(GOICPZ_CMAKE_MINIMUM_REQUIRED_VERSION 3.5)
+cmake_minimum_required(VERSION ${GOICPZ_CMAKE_MINIMUM_REQUIRED_VERSION})
 
 
 ##################################################################################
@@ -35,11 +35,11 @@ endforeach()
 # Setup project name, and version.
 ##############################################################################
 if (BUILD_SUPERBUILD)
-  project(MYPROJECT-superbuild)
-  set(MYPROJECT_SOURCE_DIR ${PROJECT_SOURCE_DIR})
-  set(MYPROJECT_BINARY_DIR ${PROJECT_BINARY_DIR})
+  project(GOICPZ-superbuild)
+  set(GOICPZ_SOURCE_DIR ${PROJECT_SOURCE_DIR})
+  set(GOICPZ_BINARY_DIR ${PROJECT_BINARY_DIR})
 else()
-  project(MYPROJECT VERSION 0.2.0)
+  project(GOICPZ VERSION 0.2.0)
 endif()
 
 
@@ -49,9 +49,9 @@ endif()
 option(BUILD_TESTING "Build Unit tests." ON)
 option(BUILD_SHARED_LIBS "Build Shared Libraries" OFF)
 if(WIN32 AND NOT BUILD_SHARED_LIBS)
-  add_definitions(-DMYPROJECT_STATIC)
+  add_definitions(-DGOICPZ_STATIC)
 endif()
-option(BUILD_SUPERBUILD "Build MYPROJECT and the projects it depends on via SuperBuild.cmake." ON)
+option(BUILD_SUPERBUILD "Build GOICPZ and the projects it depends on via SuperBuild.cmake." ON)
 option(BUILD_gflags "Build gflags." OFF)
 option(BUILD_glog "Build glog." OFF)
 option(BUILD_Boost "Build Boost." OFF)
@@ -82,8 +82,8 @@ if(BUILD_PYTHON_BINDINGS AND BUILD_SHARED_LIBS)
   message("Forcing BUILD_SHARED_LIBS to OFF as you want a python module.")
 endif()
 
-option(MYPROJECT_USE_QT "Use Qt." OFF)
-mark_as_advanced(MYPROJECT_USE_QT) # Qt gets baked into VTK, so really developers should not fiddle with this.
+option(GOICPZ_USE_QT "Use Qt." OFF)
+mark_as_advanced(GOICPZ_USE_QT) # Qt gets baked into VTK, so really developers should not fiddle with this.
 
 if(BUILD_glog AND NOT BUILD_gflags)
   set(BUILD_gflags ON CACHE BOOL "Build gflags." FORCE)
@@ -110,9 +110,9 @@ if(BUILD_PCL_VIS AND NOT BUILD_PCL)
   message("Forcing BUILD_PCL_VIS to OFF due to BUILD_PCL being OFF.") 
 endif()
 
-if(BUILD_QTVTKGUI AND NOT MYPROJECT_USE_QT)
-  set(MYPROJECT_USE_QT ON CACHE BOOL "Use Qt." FORCE)
-  message("Forcing MYPROJECT_USE_QT to ON due to BUILD_QTVTKGUI being ON.")
+if(BUILD_QTVTKGUI AND NOT GOICPZ_USE_QT)
+  set(GOICPZ_USE_QT ON CACHE BOOL "Use Qt." FORCE)
+  message("Forcing GOICPZ_USE_QT to ON due to BUILD_QTVTKGUI being ON.")
 endif()
 
 if(BUILD_QTVTKGUI AND NOT BUILD_VTK)
@@ -120,9 +120,9 @@ if(BUILD_QTVTKGUI AND NOT BUILD_VTK)
   message("Forcing BUILD_VTK to ON due to BUILD_QTVTKGUI being ON.")
 endif()
 
-if(BUILD_QMLDEMO AND NOT MYPROJECT_USE_QT)
-  set(MYPROJECT_USE_QT ON CACHE BOOL "Use Qt." FORCE)
-  message("Forcing MYPROJECT_USE_QT to ON due to BUILD_QMLDEMO being ON.")
+if(BUILD_QMLDEMO AND NOT GOICPZ_USE_QT)
+  set(GOICPZ_USE_QT ON CACHE BOOL "Use Qt." FORCE)
+  message("Forcing GOICPZ_USE_QT to ON due to BUILD_QMLDEMO being ON.")
 endif()
 
 if(BUILD_QMLDEMO AND NOT BUILD_SHARED_LIBS)
@@ -130,28 +130,28 @@ if(BUILD_QMLDEMO AND NOT BUILD_SHARED_LIBS)
   set(BUILD_SHARED_LIBS ON CACHE BOOL "Build Shared Libraries" FORCE)
 endif()
 
-set(MYPROJECT_BOOST_LIBS)
+set(GOICPZ_BOOST_LIBS)
 if(BUILD_Boost)
-  list(APPEND MYPROJECT_BOOST_LIBS "filesystem")
-  list(APPEND MYPROJECT_BOOST_LIBS "system")
-  list(APPEND MYPROJECT_BOOST_LIBS "date_time")
-  list(APPEND MYPROJECT_BOOST_LIBS "regex")
-  list(APPEND MYPROJECT_BOOST_LIBS "thread")
-  list(APPEND MYPROJECT_BOOST_LIBS "iostreams")
-  list(APPEND MYPROJECT_BOOST_LIBS "program_options")
+  list(APPEND GOICPZ_BOOST_LIBS "filesystem")
+  list(APPEND GOICPZ_BOOST_LIBS "system")
+  list(APPEND GOICPZ_BOOST_LIBS "date_time")
+  list(APPEND GOICPZ_BOOST_LIBS "regex")
+  list(APPEND GOICPZ_BOOST_LIBS "thread")
+  list(APPEND GOICPZ_BOOST_LIBS "iostreams")
+  list(APPEND GOICPZ_BOOST_LIBS "program_options")
 endif()
 if(BUILD_PYTHON_BINDINGS)
   find_package(PythonInterp REQUIRED)
   message("Found python interpreter: ${PYTHON_EXECUTABLE}")
   find_package(PythonLibs REQUIRED)
   message("Found python library version: ${PYTHONLIBS_VERSION_STRING}")
-  list(APPEND MYPROJECT_BOOST_LIBS "system")
+  list(APPEND GOICPZ_BOOST_LIBS "system")
   if (${PYTHON_VERSION_MAJOR} EQUAL 3 AND WITHIN_SUBBUILD)
-    list(APPEND MYPROJECT_BOOST_LIBS "python3")
+    list(APPEND GOICPZ_BOOST_LIBS "python3")
   else()
-    list(APPEND MYPROJECT_BOOST_LIBS "python")
+    list(APPEND GOICPZ_BOOST_LIBS "python")
   endif()
-  list(REMOVE_DUPLICATES MYPROJECT_BOOST_LIBS)
+  list(REMOVE_DUPLICATES GOICPZ_BOOST_LIBS)
 endif()
 
 
@@ -190,7 +190,7 @@ if (BUILD_QMLDEMO)
   list(APPEND _known_apps QMLDemo)
   set(BUILDING_GUIS ON)
 endif()
-set_property(GLOBAL PROPERTY MYPROJECT_GUI_APPS ${_known_apps})
+set_property(GLOBAL PROPERTY GOICPZ_GUI_APPS ${_known_apps})
 
 
 ##############################################################################
@@ -201,15 +201,15 @@ set(NIFTK_EP_TARBALL_LOCATION "http://cmic.cs.ucl.ac.uk/platform/dependencies")
 
 
 ######################################################################
-# MYPROJECT uses KWStyle for checking the coding style
+# GOICPZ uses KWStyle for checking the coding style
 ######################################################################
-include(${CMAKE_SOURCE_DIR}/Utilities/KWStyle/MYPROJECTKWStyle.cmake)
+include(${CMAKE_SOURCE_DIR}/Utilities/KWStyle/GOICPZKWStyle.cmake)
 
 
 ######################################################################
-# MYPROJECT uses CppCheck for static analysis
+# GOICPZ uses CppCheck for static analysis
 ######################################################################
-include(${CMAKE_SOURCE_DIR}/Utilities/CppCheck/MYPROJECTCppCheck.cmake)
+include(${CMAKE_SOURCE_DIR}/Utilities/CppCheck/GOICPZCppCheck.cmake)
 
 
 ######################################################################
@@ -255,7 +255,7 @@ endif()
 ######################################################################
 set(ADDITIONAL_SEARCH_PATHS "")
 set(QT5_LINK_LIBRARIES)
-if(MYPROJECT_USE_QT)
+if(GOICPZ_USE_QT)
   set(_qt_components Core Concurrent PrintSupport Script Sql Svg Xml XmlPatterns)
   if(BUILD_QTVTKGUI)
     list(APPEND _qt_components OpenGL Gui Widgets UiTools Help)
@@ -280,7 +280,7 @@ if(MYPROJECT_USE_QT)
     if(_result LESS 0)
       set(CMAKE_PREFIX_PATH "${_Qt5_DIR};${CMAKE_PREFIX_PATH}" CACHE PATH "" FORCE)
     endif()
-    set(MYPROJECT_PREFIX_PATH ${_Qt5_DIR})
+    set(GOICPZ_PREFIX_PATH ${_Qt5_DIR})
     foreach(_component ${_qt_components})
       find_package(Qt5${_component} REQUIRED QUIET)
       include_directories(${Qt5${_component}_INCLUDE_DIRS})
@@ -316,7 +316,7 @@ if(MYPROJECT_USE_QT)
   endif()
 endif()
 
-if(MYPROJECT_USE_QT AND NOT Qt5_DIR)
+if(GOICPZ_USE_QT AND NOT Qt5_DIR)
   message(FATAL " Qt was required but not found")
 endif()
 
@@ -343,20 +343,20 @@ include(mpCreateGuiApplication)
 ######################################################################
 # Choose C++ standard
 ######################################################################
-set(MYPROJECT_CXX_STANDARD 11)
+set(GOICPZ_CXX_STANDARD 11)
 set(CMAKE_CXX_EXTENSIONS 0)
-set(CMAKE_CXX_STANDARD ${MYPROJECT_CXX_STANDARD})
+set(CMAKE_CXX_STANDARD ${GOICPZ_CXX_STANDARD})
 set(CMAKE_CXX_STANDARD_REQUIRED 1)
 
 # This is necessary to avoid problems with compile feature checks.
 # CMAKE_CXX_STANDARD seems to only set the -std=c++11 flag for targets.
 # However, compile flag checks also need to be done with -std=c++11.
-# The MYPROJECT_CXX11_FLAG variable is also used for external projects
-# build during the MYPROJECT super-build.
-mitkFunctionCheckCompilerFlags("-std=c++11" MYPROJECT_CXX11_FLAG)
-if(NOT MYPROJECT_CXX11_FLAG)
+# The GOICPZ_CXX11_FLAG variable is also used for external projects
+# build during the GOICPZ super-build.
+mitkFunctionCheckCompilerFlags("-std=c++11" GOICPZ_CXX11_FLAG)
+if(NOT GOICPZ_CXX11_FLAG)
   # Older gcc compilers use -std=c++0x
-  mitkFunctionCheckCompilerFlags("-std=c++0x" MYPROJECT_CXX11_FLAG)
+  mitkFunctionCheckCompilerFlags("-std=c++0x" GOICPZ_CXX11_FLAG)
 endif()
 
 
@@ -406,7 +406,7 @@ mark_as_advanced(TCL_TCLSH DART_ROOT)
 enable_testing()
 
 if(BUILD_TESTING)
-  set(BUILDNAME "MYPROJECT" CACHE STRING "Name of build on the dashboard")
+  set(BUILDNAME "GOICPZ" CACHE STRING "Name of build on the dashboard")
   mark_as_advanced(BUILDNAME)
 
   # Setup file for setting custom ctest vars
@@ -424,7 +424,7 @@ endif(BUILD_TESTING)
 #   We configure up to this point (see the return() statement)
 #   and then we call SuperBuild.cmake, which builds all the
 #   dependencies as CMake ExternalProjects, and then also builds
-#   MYPROJECT as an ExternalProject. However instead of downloading
+#   GOICPZ as an ExternalProject. However instead of downloading
 #   a tar file, you set the SOURCE_DIR to be THIS project, and force
 #   the BUILD_SUPERBUILD flag to be off (to avoid infinite loop).
 #
@@ -463,7 +463,7 @@ configure_file(${CMAKE_SOURCE_DIR}/CMake/Findgflags.cmake.in ${CMAKE_BINARY_DIR}
 ######################################################################
 # Provide support for manually running Doxygen in build folder.
 ######################################################################
-configure_file(${CMAKE_SOURCE_DIR}/Utilities/Doxygen/myprojectdoxygen.pl.in ${CMAKE_BINARY_DIR}/myprojectdoxygen.pl)
+configure_file(${CMAKE_SOURCE_DIR}/Utilities/Doxygen/goicpzdoxygen.pl.in ${CMAKE_BINARY_DIR}/goicpzdoxygen.pl)
 configure_file(${CMAKE_SOURCE_DIR}/Utilities/Doxygen/doxygen.config.in ${CMAKE_BINARY_DIR}/doxygen.config)
 
 
@@ -551,7 +551,7 @@ if(BUILD_Boost OR BUILD_PYTHON_BINDINGS)
     set(Boost_USE_STATIC_LIBS ON)
     set(Boost_USE_STATIC_RUNTIME ON) 
   endif()
-  find_package(Boost 1.64 EXACT COMPONENTS ${MYPROJECT_BOOST_LIBS} REQUIRED)
+  find_package(Boost 1.64 EXACT COMPONENTS ${GOICPZ_BOOST_LIBS} REQUIRED)
   include_directories(${Boost_INCLUDE_DIRS})
   link_directories(${Boost_LIBRARY_DIRS})
   if(WIN32)
@@ -650,17 +650,17 @@ endif(WIN32)
 ######################################################################
 # A few shortcuts for lists of libraries.
 ######################################################################
-set(MYPROJECT_LIBRARIES myproject)
-set(ALL_LIBRARIES ${MYPROJECT_LIBRARIES} ${ALL_THIRD_PARTY_LIBRARIES} ${QT5_LINK_LIBRARIES})
+set(GOICPZ_LIBRARIES goicpz)
+set(ALL_LIBRARIES ${GOICPZ_LIBRARIES} ${ALL_THIRD_PARTY_LIBRARIES} ${QT5_LINK_LIBRARIES})
 
 
 ######################################################################
 # Set up a few paths.
 ######################################################################
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/bin)
-set(MYPROJECT_INSTALL_LIB_DIR lib)
-set(MYPROJECT_INSTALL_INC_DIR include)
-set(MYPROJECT_INSTALL_BIN_DIR bin)
+set(GOICPZ_INSTALL_LIB_DIR lib)
+set(GOICPZ_INSTALL_INC_DIR include)
+set(GOICPZ_INSTALL_BIN_DIR bin)
 
 foreach(type LIBRARY RUNTIME ARCHIVE)
   set(output_dir ${CMAKE_BINARY_DIR}/bin)
@@ -672,13 +672,13 @@ include_directories(${CMAKE_SOURCE_DIR}/Code/Lib)
 
 
 ##########################################################################################
-# The next two generate CMake code to enable external projects to correctly use MYPROJECT.
+# The next two generate CMake code to enable external projects to correctly use GOICPZ.
 ##########################################################################################
-configure_file(${CMAKE_SOURCE_DIR}/UseMyProject.cmake.in ${CMAKE_BINARY_DIR}/UseMyProject.cmake @ONLY IMMEDIATE)
-configure_file(${CMAKE_SOURCE_DIR}/MyProjectConfig.cmake.in ${CMAKE_BINARY_DIR}/MyProjectConfig.cmake @ONLY IMMEDIATE)
+configure_file(${CMAKE_SOURCE_DIR}/UseGoICPz.cmake.in ${CMAKE_BINARY_DIR}/UseGoICPz.cmake @ONLY IMMEDIATE)
+configure_file(${CMAKE_SOURCE_DIR}/GoICPzConfig.cmake.in ${CMAKE_BINARY_DIR}/GoICPzConfig.cmake @ONLY IMMEDIATE)
 if(NOT BUILDING_GUIS)
-  install(FILES ${CMAKE_BINARY_DIR}/UseMyProject.cmake DESTINATION . COMPONENT CONFIG)
-  install(FILES ${CMAKE_BINARY_DIR}/MyProjectConfig.cmake DESTINATION . COMPONENT CONFIG)
+  install(FILES ${CMAKE_BINARY_DIR}/UseGoICPz.cmake DESTINATION . COMPONENT CONFIG)
+  install(FILES ${CMAKE_BINARY_DIR}/GoICPzConfig.cmake DESTINATION . COMPONENT CONFIG)
 endif()
 
 
@@ -697,15 +697,15 @@ endif()
 ######################################################################
 # Packaging code.
 ######################################################################
-set(MYPROJECT_PACKAGE_NAME "MyProject" CACHE STRING "")
+set(GOICPZ_PACKAGE_NAME "GoICPz" CACHE STRING "")
 if(WIN32)
-  set(MYPROJECT_BASE_NAME "MyProject" CACHE STRING "")
+  set(GOICPZ_BASE_NAME "GoICPz" CACHE STRING "")
 else()
-  set(MYPROJECT_BASE_NAME "myproject" CACHE STRING "")
+  set(GOICPZ_BASE_NAME "goicpz" CACHE STRING "")
 endif()
-set(MYPROJECT_VERSION_STRING "${MYPROJECT_VERSION_MAJOR}.${MYPROJECT_VERSION_MINOR}.${MYPROJECT_VERSION_PATCH}" CACHE STRING "String to describe fully named version" FORCE)
-set(MYPROJECT_DEPLOY_NAME "${MYPROJECT_BASE_NAME}-${MYPROJECT_VERSION_STRING}" CACHE STRING "" FORCE)
-set(MYPROJECT_CONTACT "Your Name Here <your@email.com>" CACHE STRING "")
+set(GOICPZ_VERSION_STRING "${GOICPZ_VERSION_MAJOR}.${GOICPZ_VERSION_MINOR}.${GOICPZ_VERSION_PATCH}" CACHE STRING "String to describe fully named version" FORCE)
+set(GOICPZ_DEPLOY_NAME "${GOICPZ_BASE_NAME}-${GOICPZ_VERSION_STRING}" CACHE STRING "" FORCE)
+set(GOICPZ_CONTACT "Your Name Here <your@email.com>" CACHE STRING "")
 
 # 1. Setup defaults, common for all generators.
 include(CPackSetup)
@@ -718,7 +718,7 @@ if (WIN32)
   set(DESKTOP_ICONS_REMOVE_STRING "")
   set(DESKTOP_ICONS_REMOVE_STRING "")
 
-  get_property(_apps GLOBAL PROPERTY MYPROJECT_GUI_APPS)
+  get_property(_apps GLOBAL PROPERTY GOICPZ_GUI_APPS)
 
   foreach(app_name ${_apps})
 
@@ -741,13 +741,13 @@ endif()
 #    cmake_install.cmake files.
 
 configure_file(${CMAKE_SOURCE_DIR}/CMake/CPackOptions.cmake.in
-               ${CMAKE_BINARY_DIR}/MYPROJECTCPackOptions.cmake @ONLY IMMEDIATE)
+               ${CMAKE_BINARY_DIR}/GOICPZCPackOptions.cmake @ONLY IMMEDIATE)
 
 # 4. Set a variable with the name of this file.
-set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_BINARY_DIR}/MYPROJECTCPackOptions.cmake")
+set(CPACK_PROJECT_CONFIG_FILE "${CMAKE_BINARY_DIR}/GOICPZCPackOptions.cmake")
 
 # 5. Include this optional file.
-include(MYPROJECTCPackOptions)
+include(GOICPZCPackOptions)
 
 # 6. Include CPack module once all variables are set.
 include(CPack)

@@ -1,6 +1,6 @@
 #/*============================================================================
 #
-#  MYPROJECT: A software package for whatever.
+#  GOICPZ: A software package for globally optimal implementations of the iterative closest point algorithm.
 #
 #  Copyright (c) University College London (UCL). All rights reserved.
 #
@@ -42,7 +42,7 @@ if(NOT DEFINED glog_DIR)
     CMAKE_GENERATOR ${gen}
     CMAKE_ARGS
       ${EP_COMMON_ARGS}
-      -DCMAKE_PREFIX_PATH:PATH=${MYPROJECT_PREFIX_PATH}
+      -DCMAKE_PREFIX_PATH:PATH=${GOICPZ_PREFIX_PATH}
       -Dgflags_DIR:PATH=${gflags_DIR}/lib/cmake/gflags
       -DCMAKE_SHARED_LINKER_FLAGS:STRING="-L${gflags_LIBRARY_DIR}" # gflags-config.cmake doesn't export this.
       -DCMAKE_EXE_LINKER_FLAGS:STRING="-L${gflags_LIBRARY_DIR}"    # gflags-config.cmake doesn't export this.

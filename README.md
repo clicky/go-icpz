@@ -198,11 +198,10 @@ Preferred Branching Workflow
 ----------------------------
 
  1. Raise issue in this project's Github Issue Tracker.
- 2. Fork repository.
- 3. Create a feature branch called ```<issue-number>-<some-short-description>```
+ 2. Create a feature branch called ```<issue-number>-<some-short-description>```
     replacing ```<issue-number>``` with the Github issue number
     and ```<some-short-description>``` with your description of the thing you are implementing.
- 4. Code on that branch.
+ 4. Code on that branch, making sure each commit contains "Issue #<issue-number>" replacing ```<issue-number>``` with the Github issue number you are working on.
  5. Push to your remote when ready.
- 6. Create pull request.
+ 6. Create pull request to indicate that I should review it.
  7. We will review code, and merge to master when it looks ready.

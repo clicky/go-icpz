@@ -48,6 +48,7 @@
 #include <pcl/registration/icp.h>
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/time.h>   // TicToc
+#include <goicpzPclIcp.h>
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -107,6 +108,33 @@ int main(int argc, char** argv)
   pcl::PointCloud<pcl::PointXYZ> cloud;
 #endif
 
+  // Checking program arguments
+  if (argc < 2)
+  {
+    printf ("Usage :\n");
+    printf ("\t\t%s file.ply number_of_ICP_iterations\n", argv[0]);
+    PCL_ERROR ("Provide one ply file.\n");
+    return (-1);
+  }
+
+  int iterations = 1;  // Default number of ICP iterations
+  if (argc > 2)
+  {
+    // If the user passed the number of iteration as an argument
+    iterations = atoi (argv[2]);
+    if (iterations < 1)
+    {
+      PCL_ERROR ("Number of initial iterations must be >= 1\n");
+      return (-1);
+    }
+  }
+
+  goicpz::PclRegister pclRegister;
+  pclRegister.registerFixedSurface(argv[1]);
+  pclRegister.applyTransformation();
+  pclRegister.performIcp(iterations);
+
+/*
   // The point clouds we will be using
   PointCloudT::Ptr cloud_in (new PointCloudT);  // Original point cloud
   PointCloudT::Ptr cloud_tr (new PointCloudT);  // Transformed point cloud
@@ -267,7 +295,7 @@ int main(int argc, char** argv)
       }
     }
     next_iteration = false;
-  }
+  }*/
 
   return 0;
 }

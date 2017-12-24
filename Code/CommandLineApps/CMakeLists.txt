@@ -13,7 +13,7 @@
 #============================================================================*/
 
 set(_command_line_apps
-  goicpzMyFirstApp
+  goicpzPclTestApp
 )
 
 foreach(_app ${_command_line_apps})

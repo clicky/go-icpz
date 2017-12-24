@@ -131,8 +131,8 @@ int main(int argc, char** argv)
 
   goicpz::PclRegister pclRegister;
   pclRegister.registerFixedSurface(argv[1]);
-  pclRegister.applyTransformation();
-  pclRegister.performIcp(iterations);
+  Eigen::Matrix4d transform = pclRegister.applyTransformation();
+  pclRegister.performIcp(transform, iterations);
 
 /*
   // The point clouds we will be using

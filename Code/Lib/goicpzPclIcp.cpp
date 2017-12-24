@@ -2,21 +2,21 @@
 // Created by Murtuza Husain on 17/12/2017.
 //
 
+#include "goicpzPclIcp.h"
+
 namespace goicpz {
 
-    void PclRegister::registerFixedSurface(const std::str path) {
+    void PclRegister::registerFixedSurface(std::string path) {
         // Load PLY data e.g. Stanford Bunny
-        pcl::console::TicToc time;
         time.tic ();
         if (pcl::io::loadPLYFile (path, *cloud_in) < 0)
         {
-            PCL_ERROR ("Error loading cloud %s.\n", argv[1]);
-            return (-1);
+            //PCL_ERROR ("Error loading cloud %s.\n", path);
         }
         std::cout << "\nLoaded file " << path << " (" << cloud_in->size () << " points) in " << time.toc () << " ms\n" << std::endl;
     }
 
-    void PclRegister::applyTransformation() {
+    Eigen::Matrix4d PclRegister::applyTransformation() {
         // Defining a rotation matrix and translation vector
         Eigen::Matrix4d transformation_matrix = Eigen::Matrix4d::Identity ();
 
@@ -37,9 +37,10 @@ namespace goicpz {
         // Executing the transformation
         pcl::transformPointCloud (*cloud_in, *cloud_icp, transformation_matrix);
         *cloud_tr = *cloud_icp;  // We backup cloud_icp into cloud_tr for later use
+        return transformation_matrix;
     }
 
-    void PclRegister::performIcp(int iterations) {
+    void PclRegister::performIcp(Eigen::Matrix4d transformation_matrix, int iterations) {
         // The Iterative Closest Point algorithm
         time.tic ();
         pcl::IterativeClosestPoint<PointT, PointT> icp;
@@ -60,7 +61,7 @@ namespace goicpz {
         }
     }
 
-    PclRegister::print4x4Matrix (const Eigen::Matrix4d & matrix) {
+    void PclRegister::print4x4Matrix (const Eigen::Matrix4d & matrix) {
         printf ("Rotation matrix :\n");
         printf ("    | %6.3f %6.3f %6.3f | \n", matrix (0, 0), matrix (0, 1), matrix (0, 2));
         printf ("R = | %6.3f %6.3f %6.3f | \n", matrix (1, 0), matrix (1, 1), matrix (1, 2));

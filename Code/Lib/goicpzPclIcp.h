@@ -24,9 +24,14 @@ namespace goicpz {
         // The point clouds we will be using
         PointCloudT::Ptr cloud_in;  // Original point cloud
         PointCloudT::Ptr cloud_tr;  // Transformed point cloud
-        PointCloudT::Ptr cloud_icp;  // ICP output point cloud
+        PointCloudT::Ptr cloud_icp; // ICP output point cloud
         pcl::console::TicToc time;
     public:
+        PclRegister() :
+                cloud_in(new PointCloudT),
+                cloud_tr(new PointCloudT),
+                cloud_icp(new PointCloudT)
+        {}
         void registerFixedSurface(std::string path);
         Eigen::Matrix4d applyTransformation();
         void performIcp(Eigen::Matrix4d transform, int iterations);

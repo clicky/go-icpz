@@ -9,9 +9,8 @@ namespace goicpz {
     void PclRegister::registerFixedSurface(std::string path) {
         // Load PLY data e.g. Stanford Bunny
         time.tic ();
-        if (pcl::io::loadPLYFile (path, *cloud_in) < 0)
-        {
-            //PCL_ERROR ("Error loading cloud %s.\n", path);
+        if (pcl::io::loadPLYFile (path, *cloud_in) < 0) {
+            std::cerr << "Error loading cloud " << path << std::endl;
         }
         std::cout << "\nLoaded file " << path << " (" << cloud_in->size () << " points) in " << time.toc () << " ms\n" << std::endl;
     }
@@ -37,10 +36,11 @@ namespace goicpz {
         // Executing the transformation
         pcl::transformPointCloud (*cloud_in, *cloud_icp, transformation_matrix);
         *cloud_tr = *cloud_icp;  // We backup cloud_icp into cloud_tr for later use
+
         return transformation_matrix;
     }
 
-    void PclRegister::performIcp(Eigen::Matrix4d transformation_matrix, int iterations) {
+    void PclRegister::performIcp(Eigen::Matrix4d & transformation_matrix, int iterations) {
         // The Iterative Closest Point algorithm
         time.tic ();
         pcl::IterativeClosestPoint<PointT, PointT> icp;
@@ -57,7 +57,7 @@ namespace goicpz {
             transformation_matrix = icp.getFinalTransformation ().cast<double>();
             print4x4Matrix (transformation_matrix);
         } else {
-            PCL_ERROR ("\nICP has not converged.\n");
+            std::cerr << "ICP has not converged." << std::endl;
         }
     }
 

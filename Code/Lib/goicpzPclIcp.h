@@ -33,8 +33,9 @@ namespace goicpz {
                 cloud_icp(new PointCloudT)
         {}
         void registerFixedSurface(std::string path);
-        Eigen::Matrix4d applyTransformation();
-        void performIcp(Eigen::Matrix4d & transform, int iterations);
+        void registerTargetSurface(std::string path);
+        void performIcp();
+    private:
         void print4x4Matrix(const Eigen::Matrix4d & matrix);
     };
 

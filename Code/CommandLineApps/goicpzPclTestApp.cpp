@@ -25,7 +25,6 @@
 
 #ifdef BUILD_Eigen
 #include <Eigen/Dense>
-#include <unsupported/Eigen/NonLinearOptimization>
 #endif
 
 #ifdef BUILD_Boost
@@ -43,40 +42,23 @@
 #include <pcl/common/projection_matrix.h>
 #endif
 
-/**
- * \brief Demo file to check that #includes and library linkage is correct.
- */
-int main(int argc, char** argv)
+#include <Eigen/Dense>
+#include <pcl/io/ply_io.h>
+#include <pcl/point_types.h>
+#include <pcl/registration/icp.h>
+#include <pcl/visualization/pcl_visualizer.h>
+#include <pcl/console/time.h>   // TicToc
+#include <goicpzPclIcp.h>
+
+typedef pcl::PointXYZ PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
+
+int main (int argc, char** argv)
 {
+    goicpz::PclRegister pcl;
+    pcl.registerFixedSurface(argv[1]);
+    pcl.registerTargetSurface(argv[2]);
+    pcl.performIcp();
 
-#ifdef BUILD_glog
-  google::InitGoogleLogging(argv[0]);
-#endif
-
-#ifdef BUILD_gflags
-  gflags::SetVersionString("1.0.0");
-#endif
-
-#ifdef BUILD_Eigen
-  Eigen::MatrixXd m(2,2);
-  std::cout << "Printing 2x2 matrix ..." << m << std::endl;
-#endif
-
-#ifdef BUILD_Boost
-  std::cout << "Rounding to ... " << boost::math::round(0.123) << std::endl;
-  boost::posix_time::ptime startTime = boost::posix_time::second_clock::local_time();
-  boost::filesystem::path pathname( "/tmp/tmp.txt" );
-#endif
-
-#ifdef BUILD_OpenCV
-  cv::Matx44d matrix = cv::Matx44d::eye();
-  std::cout << "Printing 4x4 matrix ..." << matrix << std::endl;
-#endif
-
-#ifdef BUILD_PCL
-  pcl::PointCloud<pcl::PointXYZ> cloud;
-#endif
-
-  std::cout << "Calculating ... " << goicpz::MyFirstAddFunction(1, 2) << std::endl;
-  return 0;
+    return 0;
 }

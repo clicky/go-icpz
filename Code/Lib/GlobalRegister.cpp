@@ -3,6 +3,7 @@
 //
 
 #include "GlobalRegister.h"
+#include "math.t"
 
 namespace goicpz {
 
@@ -24,8 +25,8 @@ namespace goicpz {
      *
      * g_x(m_i,m_j,t_i,t_j,sigma_x) = 0.5 * (g(m_i,x_mi,t_i,x_ti,sigma_x) + g(m_i,x_mj,t_i,x_tj,sigma_x))
      */
-    void RigidRegister::getContourConstraint() {
-
+    float RigidRegister::getContourConstraint(PointT mi, PointT mj, PointT ti, PointT tj) {
+        //applyRigidityRegulator(mi, j) + applyRigidityRegulator()
     }
 
     /**
@@ -33,8 +34,8 @@ namespace goicpz {
      *
      * g(m_i,m_j,t_i,t_j,sigma) = exp( (c(m_i,m_j,t_i,t_j) - 1)^2 / (2 * sigma^2) )
      */
-    void RigidRegister::applyRigidityRegulator() {
-
+    float RigidRegister::applyRigidityRegulator(PointT mi, PointT mj, PointT ti, PointT tj, float sigma) {
+        return pow((correspondence(mi, mj, ti, tj) - 1), 2) / (2 * pow(sigma, 2));
     }
 
     /**
@@ -42,8 +43,10 @@ namespace goicpz {
      *
      * c(m_i,m_j,t_i,t_j) = min [ (d(m_i,m_j) / (d(t_i,t_j) + epsi), (d(t_i,t_j) / (d(m_i,m_j) + epsi) ]
      */
-    void RigidRegister::correspondece() {
-
+    float RigidRegister::correspondence(PointT mi, PointT mj, PointT ti, PointT tj) {
+        float a = geodesicDistance(mi, mj) / geodesicDistance(ti, tj) + _epsilon;
+        float b = geodesicDistance(ti, tj) / geodesicDistance(mi, mj) + _epsilon;
+        return std::min(a, b);
     }
 
     /**
@@ -51,7 +54,7 @@ namespace goicpz {
      *
      * d(x_i,x_j)
      */
-    void RigidRegister::geodesicDistance(PointT i, PointT j) {
+    float RigidRegister::geodesicDistance(PointT i, PointT j) {
 
     }
 }

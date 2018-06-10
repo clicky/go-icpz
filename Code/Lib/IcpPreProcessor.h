@@ -6,20 +6,19 @@
 #define GOICPZ_SUPERBUILD_ICPPREPROCESSOR_H
 
 
-typedef pcl::PointXYZ PointT;
-typedef pcl::PointNormal NormalT;
+typedef pcl::PointXYZRGBNormal PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
 namespace goicpz {
 
     class IcpPreProcessor {
     private:
-        PointCloudT::Ptr movingMesh;
+        PointCloudT::Ptr movingMesh_surface;
+        PointCloudT::Ptr movingMesh_top;
+        PointCloudT::Ptr movingMesh_boundary;
     public:
-        void loadMovingMesh(std::String path);
-        PointCloudT::Ptr selectFeatures();
-        void computeDescriptors(PointCloudT::Ptr mask);
-        void buildDistanceTree();
+        void loadMesh(std::String path, PointCloudT::Ptr mesh);
+        PointCloudT::Ptr build_features();
     };
 
 }

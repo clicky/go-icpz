@@ -3,3 +3,7 @@
 //
 
 #include "IcpPreProcessorTest.h"
+#include "IcpPreProcessor.cpp"
+#include <iostream>
+#include <vector>
+

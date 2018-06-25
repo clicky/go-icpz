@@ -16,9 +16,14 @@ namespace goicpz {
         PointCloudT::Ptr movingMesh_surface;
         PointCloudT::Ptr movingMesh_top;
         PointCloudT::Ptr movingMesh_boundary;
+        pcl::IndicesPtr features_idx;
+        std::vector<std::vector<float>> histograms;
     public:
-        void loadMesh(std::String path, PointCloudT::Ptr mesh);
+        void load_moving_surface(std::String path);
+        void load_moving_top(std::String path);
+        void load_moving_boundary(std::String path);
         PointCloudT::Ptr build_features();
+        void build_descriptors();
     };
 
 }

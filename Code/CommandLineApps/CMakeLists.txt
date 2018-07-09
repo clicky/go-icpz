@@ -13,7 +13,7 @@
 #============================================================================*/
 
 set(_command_line_apps
-  goicpzPclTestApp
+  goicpzGlobalRigidRegTest
 )
 
 foreach(_app ${_command_line_apps})

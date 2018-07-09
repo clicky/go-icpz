@@ -18,7 +18,7 @@ set(GOICPZ_LIBRARY_SRCS
   goicpzBasicTypes.cpp
   goicpzMyFunctions.cpp
   goicpzException.cpp
-  goicpzPclIcp.cpp
+  goicpzSurfaceUtils.cpp
 )
 
 set(GOICPZ_LIBRARY_HDRS

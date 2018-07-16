@@ -12,7 +12,7 @@
 #include <pcl/point_types.h>
 #include <pcl/common/projection_matrix.h>
 
-typedef pcl::PointXYZRGBNormal PointT;
+typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
 using namespace goicpz;
@@ -28,6 +28,7 @@ void precompute_moving(PointCloudT::Ptr moving_mesh, PointCloudT::Ptr moving_mas
 }
 
 int main (int argc, char** argv) {
+    std::cout << "test123" << std::endl;
     PointCloudT::Ptr moving_mesh(new PointCloudT());
     PointCloudT::Ptr moving_mask(new PointCloudT());
     PointCloudT::Ptr moving_bndy(new PointCloudT());

@@ -76,52 +76,70 @@ namespace goicpz {
         return indices;
     }
 
+    /**
+     * Take the unique indicies of two samples.
+     *
+     * @param indices sample1 .
+     * @param indices sample2 .
+     * @return unique join of sample indices .
+     */
     pcl::IndicesPtr unique_indices(pcl::IndicesPtr sample1, pcl::IndicesPtr sample2) {
-        pcl::IndicesPtr sample(*sample1);
-        *sample.reserve(*sample1.size() + *sample2.size());
-        *sample.insert(*sample1.end(), *sample2().start(), *sample2.end());
+        pcl::IndicesPtr sample(new std::vector<int>());
 
-        vector<int>::iterator ip;
-        ip = std::unique(*sample.begin(), *sample.size());
-        *sample.resize(std::distance(*sample.begin(), ip));
+        std::set<int> s;
+        for (int i = 0; i < sample1->size(); i++) {
+            s.insert((*sample1)[i]);
+        }
+        for (int i = 0; i < sample2->size(); i++) {
+            s.insert((*sample2)[i]);
+        }
 
+        sample->assign(s.begin(), s.end());
         return sample;
     }
 
     // Feature selection
 
-    pcl::IndicesPtr select_points(PointClountT::Ptr mesh, pcl::IndicesPtr sample) {
+    pcl::IndicesPtr select_points(PointCloudT::Ptr mesh, pcl::IndicesPtr sample) {
         pcl::KdTreeFLANN <PointT> kdtree;
         kdtree.setInputCloud(mesh);
 
-        std::vector<int> correspondence_points;
+        pcl::IndicesPtr correspondence_points(new std::vector<int>());
         std::vector<float> correspondence_distances;
 
-        for (int i = 0; i < *sample.size(); i++) {
+        for (int i = 0; i < sample->size(); i++) {
             const int K = 1;
             std::vector<int> pointIdxNKNSearch(K);
             std::vector<float> pointNKNSquaredDistance(K);
             kdtree.nearestKSearch(mesh->points[i], K, pointIdxNKNSearch, pointNKNSquaredDistance);
 
-            correspondence_points.push_back(pointIdxNKNSearch[0]);
+            correspondence_points->push_back(pointIdxNKNSearch[0]);
             correspondence_distances.push_back(pointNKNSquaredDistance[0]);
         }
 
-        return pcl::IndicesPtr(correspondence_points);
+        return correspondence_points;
 
         // TODO remove bndy points as they are bad descriptors
 
-
     }
 
+    /**
+     * Extract a subset of points from a point cloud.
+     *
+     * @param mesh to subsample.
+     * @param feature_indices of input mesh required.
+     * @return subset of input mesh.
+     *
+     * @see http://pointclouds.org/documentation/tutorials/extract_indices.php
+     */
     PointCloudT::Ptr select_feature_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices) {
         PointCloudT::Ptr features(new PointCloudT);
 
         pcl::ExtractIndices<PointT> extract;
         extract.setInputCloud(mesh);
-        extract.setIndices(sample);
+        extract.setIndices(feature_indices);
         extract.setNegative(false);
-        extract.setFilter(*feature_indices);
+        extract.filter(*features);
 
         return features;
     }
@@ -131,7 +149,7 @@ namespace goicpz {
         int supportRadius = 20;
 
         std::vector<std::vector<float>> histograms;
-        TOLDI_compute(mesh, *features, supportRadius, bins, histograms);
+        //TOLDI_compute(mesh, *features, supportRadius, bins, histograms);
 
         return histograms;
     }

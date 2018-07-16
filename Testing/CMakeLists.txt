@@ -21,7 +21,7 @@ set(TEST_CASES
 )
 
 foreach(_test_case ${TEST_CASES})
-  add_executable(${_test_case} ${_test_case}.cpp goicpzCatchMain.cpp)
+  add_executable(${_test_case} ${_test_case}.cpp goicpzCatchMain.cpp goicpzSurfaceUtilsTest.cpp goicpzSurfaceUtilsTest.h)
   target_link_libraries(${_test_case} ${ALL_LIBRARIES})
 endforeach()
 

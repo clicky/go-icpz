@@ -12,11 +12,12 @@
 #include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/time.h>   // TicToc
 #include <pcl/filters/normal_space.h>
+#include <pcl/filters/extract_indices.h>
 #include <string>
 #include <vector>
-#include "TOLDI.h"
+//#include "TOLDI.h"
 
-typedef pcl::PointXYZRGBNormal PointT;
+typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
 
 namespace goicpz {
@@ -29,7 +30,7 @@ namespace goicpz {
     pcl::IndicesPtr unique_indices(pcl::IndicesPtr sample1, pcl::IndicesPtr sample2);
 
     // Feature selection
-    pcl::IndicesPtr select_points(PointClountT::Ptr mesh, pcl::IndicesPtr sample);
+    pcl::IndicesPtr select_points(PointCloudT::Ptr mesh, pcl::IndicesPtr sample);
     PointCloudT::Ptr select_feature_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices);
 
     // Descriptors

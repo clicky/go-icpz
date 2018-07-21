@@ -42,10 +42,12 @@ TEST_CASE("Unique Indices", "[surfaceregister]") {
     REQUIRE(flags[10]);
 }
 
-TEST_CASE("PLY loader", "[surfaceutils]") {
+TEST_CASE("PLY loader", "[surfaceregister]") {
+    goicpz::SurfaceRegister reg;
+
     PointCloudT::Ptr cloud(new PointCloudT());
-    //load_mesh("/Users/murtuza/dev/CPP/dissertation/go-icpz/Testing/Data/bun000.ply", cloud);
-    load_mesh("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply", cloud);
+    //reg.read_ply("/Users/murtuza/dev/CPP/dissertation/go-icpz/Testing/Data/bun000.ply", cloud);
+    reg.read_ply("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply", cloud);
 
     int sz = cloud->points.size();
     REQUIRE(sz > 0);
@@ -64,7 +66,8 @@ TEST_CASE("PLY loader", "[surfaceutils]") {
 
 TEST_CASE("Farthest Point Sample", "[surfaceregister]") {
     goicpz::SurfaceRegister reg;
-    reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
+    reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
+                     "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
 
     int sz = 100;
     pcl::IndicesPtr sample = reg.farthest_point_sample(sz);
@@ -74,7 +77,8 @@ TEST_CASE("Farthest Point Sample", "[surfaceregister]") {
 
 TEST_CASE("Normal Space Sample", "[surfaceregister]") {
     goicpz::SurfaceRegister reg;
-    reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
+    reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
+                     "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
 
     int sz = 1300;
     pcl::IndicesPtr sample = reg.normal_space_sample(sz);
@@ -85,7 +89,8 @@ TEST_CASE("Normal Space Sample", "[surfaceregister]") {
 TEST_CASE("Feature selection test", "[surfaceregister]") {
 
     goicpz::SurfaceRegister reg;
-    reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
+    reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
+                     "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
 
     int sz = 1600;
     pcl::IndicesPtr features = reg.select_features(sz);

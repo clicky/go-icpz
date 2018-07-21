@@ -7,15 +7,29 @@
 
 namespace goicpz {
 
-    void SurfaceRegister::load_surface(std::string path) {
-        load_mesh(path, cloud);
+    /**
+     * Load the
+     * @param path
+     */
+    void SurfaceRegister::load_surface(std::string surfacePath, std::string boundaryPath) {
+        read_ply(surfacePath, surface);
+        read_ply(boundaryPath, boundary);
 
         pcl::NormalEstimation<PointT,NormalT> ne;
-        ne.setInputCloud (cloud);
+        ne.setInputCloud (surface);
         ne.setRadiusSearch (0.05);
         ne.compute(*normals);
-        copyPointCloud(*cloud, *normals);
+        copyPointCloud(*surface, *normals);
     }
+
+    void SurfaceRegister::read_ply(std::string path, PointCloudT::Ptr cloud) {
+        if (pcl::io::loadPLYFile(path, *cloud) < 0) {
+            std::cerr << "Error loading cloud " << path << std::endl;
+        }
+        std::cout << "Cloud loaded from " << path << std::endl;
+    }
+
+    // FEATURE SELECTION
 
     /**
      * Sample the point cloud surface using a combination of farthest point and normal space sampling, returning the
@@ -41,7 +55,7 @@ namespace goicpz {
 
         for (int it = 0; it < maxIter; it++) {
             // random initial points
-            const int sz = cloud->points.size();
+            const int sz = surface->points.size();
             int point_indexes[num_samples];
             for (int i = 0; i < num_samples; ++i) {
                 int r = std::rand() % sz + 1;
@@ -50,14 +64,14 @@ namespace goicpz {
 
             // knn search
             pcl::KdTreeFLANN <PointT> kdtree;
-            kdtree.setInputCloud(cloud);
+            kdtree.setInputCloud(surface);
 
             std::vector<int> iter_points;
             int iter_d = 0;
 
             for (int i = 0; i < num_samples; i++) {
                 int pnt = point_indexes[i];
-                PointT searchPoint = cloud->points[pnt];
+                PointT searchPoint = surface->points[pnt];
 
                 std::vector<int> pointIdxNKNSearch(K);
                 std::vector<float> pointNKNSquaredDistance(K);
@@ -77,18 +91,28 @@ namespace goicpz {
         return max_iter_points;
     }
 
-
-    // https://github.com/PointCloudLibrary/pcl/blob/master/test/filters/test_sampling.cpp
-
+    /**
+     * S
+     * @param num_samples
+     * @return
+     * @see https://github.com/PointCloudLibrary/pcl/blob/master/test/filters/test_sampling.cpp
+     */
     pcl::IndicesPtr SurfaceRegister::normal_space_sample(int num_samples) {
         return normal_space_sample(num_samples, 4, 50);
     }
 
+    /**
+     *
+     * @param num_samples
+     * @param bins
+     * @param seed
+     * @return
+     */
     pcl::IndicesPtr SurfaceRegister::normal_space_sample(int num_samples, int bins, int seed) {
         pcl::NormalSpaceSampling<PointT, NormalT> sample;
         sample.setSeed(seed);
         sample.setNormals(normals);
-        sample.setInputCloud(cloud);
+        sample.setInputCloud(surface);
         sample.setSample(num_samples);
         sample.setBins(bins, bins, bins);
 
@@ -120,14 +144,40 @@ namespace goicpz {
         return sample;
     }
 
+    // DESCRIPTORS
+
     std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features) {
         return compute_descriptors(features, 10, 20);
     }
 
     std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features, int bins, int radius) {
         std::vector<std::vector<float>> histograms;
-        TOLDI_compute(cloud, *features, radius, bins, histograms);
+        TOLDI_compute(surface, *features, radius, bins, histograms);
         return histograms;
+    }
+
+    // DISTANCES
+
+    void SurfaceRegister::compute_distances() {
+
+    }
+
+    // UTILS
+
+    void SurfaceRegister::save() {
+
+    }
+
+    PointCloudT::Ptr SurfaceRegister::getSurface() {
+        return surface;
+    }
+
+    PointCloudT::Ptr SurfaceRegister::getSurfaceBoundary() {
+        return boundary;
+    }
+
+    PointNormalCloudT::Ptr SurfaceRegister::getNormals() {
+        return normals;
     }
 
 }

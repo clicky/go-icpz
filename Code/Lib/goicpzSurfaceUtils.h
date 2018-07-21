@@ -18,24 +18,14 @@
 #include <vector>
 #include "TOLDI.h"
 
-typedef pcl::PointXYZ PointT;
-typedef pcl::PointCloud<PointT> PointCloudT;
 
-typedef pcl::PointNormal NormalT;
-typedef pcl::PointCloud<NormalT> PointNormalCloudT;
 
 namespace goicpz {
 
-    void load_mesh(std::string path, PointCloudT::Ptr mesh);
 
-    // Sampling
+    //PointCloudT::Ptr select_feature_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices);
 
-    // Feature selection
-    pcl::IndicesPtr select_points(PointCloudT::Ptr mesh, pcl::IndicesPtr sample);
-    PointCloudT::Ptr select_feature_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices);
 
-    // Descriptors
-    std::vector<std::vector<float>> compute_toldi_descriptors(PointCloudT::Ptr mesh, pcl::IndicesPtr features);
 
 }
 

@@ -11,18 +11,30 @@
 #include <pcl/filters/normal_refinement.h>
 #include <pcl/filters/sampling_surface_normal.h>
 
+typedef pcl::PointXYZ PointT;
+typedef pcl::PointCloud<PointT> PointCloudT;
+
+typedef pcl::PointNormal NormalT;
+typedef pcl::PointCloud<NormalT> PointNormalCloudT;
+
 namespace goicpz {
 
 class SurfaceRegister {
 
-public:
-    PointCloudT::Ptr cloud;
+protected:
+    PointCloudT::Ptr surface;
+    PointCloudT::Ptr boundary;
     PointNormalCloudT::Ptr normals;
 
+public:
     SurfaceRegister():
-            cloud(new PointCloudT()),
+            surface(new PointCloudT()),
+            boundary(new PointCloudT()),
             normals(new PointNormalCloudT()) {}
-    void load_surface(std::string path);
+
+    // IO
+    void load_surface(std::string mask, std::string boundary);
+    void read_ply(std::string path, PointCloudT::Ptr cloud);
 
     // Feature selection
     pcl::IndicesPtr select_features(int sample_size);
@@ -36,10 +48,13 @@ public:
     std::vector<std::vector<float>> compute_descriptors(pcl::IndicesPtr features, int bins, int radius);
 
     // Geodesic distances
+    void compute_distances();
 
-
-    void calculate_distances();
+    // Utils
     void save();
+    PointCloudT::Ptr getSurface();
+    PointCloudT::Ptr getSurfaceBoundary();
+    PointNormalCloudT::Ptr getNormals();
 };
 
 }

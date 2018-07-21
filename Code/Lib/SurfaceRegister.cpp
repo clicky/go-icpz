@@ -13,8 +13,8 @@ namespace goicpz {
         pcl::NormalEstimation<PointT,NormalT> ne;
         ne.setInputCloud (cloud);
         ne.setRadiusSearch (0.05);
-        ne.compute (*normals);
-        copyPointCloud (*cloud, *normals);
+        ne.compute(*normals);
+        copyPointCloud(*cloud, *normals);
     }
 
     /**
@@ -81,14 +81,16 @@ namespace goicpz {
     // https://github.com/PointCloudLibrary/pcl/blob/master/test/filters/test_sampling.cpp
 
     pcl::IndicesPtr SurfaceRegister::normal_space_sample(int num_samples) {
-        int num_bins = 4;
+        return normal_space_sample(num_samples, 4, 50);
+    }
 
+    pcl::IndicesPtr SurfaceRegister::normal_space_sample(int num_samples, int bins, int seed) {
         pcl::NormalSpaceSampling<PointT, NormalT> sample;
-        sample.setSeed(50);
+        sample.setSeed(seed);
         sample.setNormals(normals);
         sample.setInputCloud(cloud);
         sample.setSample(num_samples);
-        sample.setBins(num_bins, num_bins, num_bins);
+        sample.setBins(bins, bins, bins);
 
         pcl::IndicesPtr indices(new std::vector<int>());
         sample.filter(*indices);
@@ -116,6 +118,16 @@ namespace goicpz {
 
         sample->assign(s.begin(), s.end());
         return sample;
+    }
+
+    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features) {
+        return compute_descriptors(features, 10, 20);
+    }
+
+    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features, int bins, int radius) {
+        std::vector<std::vector<float>> histograms;
+        TOLDI_compute(cloud, *features, radius, bins, histograms);
+        return histograms;
     }
 
 }

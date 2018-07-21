@@ -81,3 +81,17 @@ TEST_CASE("Normal Space Sample", "[surfaceregister]") {
 
     REQUIRE(sample->size() == sz);
 }
+
+TEST_CASE("Feature selection test", "[surfaceregister]") {
+
+    goicpz::SurfaceRegister reg;
+    reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
+
+    int sz = 1600;
+    pcl::IndicesPtr features = reg.select_features(sz);
+    std::vector<std::vector<float>> desc = reg.compute_descriptors(features);
+
+    REQUIRE(features->size() <= sz);
+    REQUIRE(features->size() == desc.size());
+
+}

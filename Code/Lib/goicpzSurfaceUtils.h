@@ -6,28 +6,29 @@
 #define GOICPZ_SUPERBUILD_GOICPZSURFACEUTILS_H
 
 #include <Eigen/Dense>
+#include <pcl/common/transforms.h>
+#include <pcl/common/eigen.h>
 #include <pcl/io/ply_io.h>
 #include <pcl/point_types.h>
 #include <pcl/registration/icp.h>
-#include <pcl/visualization/pcl_visualizer.h>
 #include <pcl/console/time.h>   // TicToc
 #include <pcl/filters/normal_space.h>
 #include <pcl/filters/extract_indices.h>
 #include <string>
 #include <vector>
-//#include "TOLDI.h"
+#include "TOLDI.h"
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
+
+typedef pcl::PointNormal NormalT;
+typedef pcl::PointCloud<NormalT> PointNormalCloudT;
 
 namespace goicpz {
 
     void load_mesh(std::string path, PointCloudT::Ptr mesh);
 
     // Sampling
-    std::vector<int> farthest_points(PointCloudT::Ptr mesh, int num_samples);
-    pcl::IndicesPtr normal_sampling(PointCloudT::Ptr mesh, int num_samples);
-    pcl::IndicesPtr unique_indices(pcl::IndicesPtr sample1, pcl::IndicesPtr sample2);
 
     // Feature selection
     pcl::IndicesPtr select_points(PointCloudT::Ptr mesh, pcl::IndicesPtr sample);

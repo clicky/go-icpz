@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <vector>
 #include <time.h>
-#include <pcl\point_types.h>
+#include <pcl/point_types.h>
 #include <pcl/registration/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>

@@ -19,7 +19,10 @@ set(GOICPZ_LIBRARY_SRCS
   goicpzMyFunctions.cpp
   goicpzException.cpp
   goicpzSurfaceUtils.cpp
-)
+  IOUtils.cpp
+  TOLDI_descriptor.cpp
+  TOLDI_LRF.cpp
+        SurfaceRegister.cpp SurfaceRegister.h)
 
 set(GOICPZ_LIBRARY_HDRS
   goicpzExceptionMacro.h

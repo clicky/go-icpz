@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <vector>
 #include <time.h>
-#include <pcl\point_types.h>
+#include <pcl/point_types.h>
 #include <pcl/registration/transforms.h>
 #include <pcl/kdtree/kdtree_flann.h>
 #include <pcl/features/normal_3d.h>
@@ -52,7 +52,7 @@ void TOLDI_LRF_X_axis(pcl::PointCloud<pcl::PointXYZ>::Ptr cloud,Vertex z_axis,fl
 	for(i=0;i<cloud->points.size();i++)
 	{
 		Vertex temp;
-		Vertex pq={cloud->points[i].x-query_point.x,cloud->points[i].y-query_point.y,cloud->points[i].z-query_point.z};//pqÏòÁ¿ÎªÁÚÓòµãÓë²éÑ¯µã×é³ÉµÄÏòÁ¿
+		Vertex pq={cloud->points[i].x-query_point.x,cloud->points[i].y-query_point.y,cloud->points[i].z-query_point.z};//pqï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¯ï¿½ï¿½ï¿½ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½
 		float proj=z_axis.x*pq.x+z_axis.y*pq.y+z_axis.z*pq.z;
 		if(proj>=0)
 			sign_weight.push_back(pow(proj,2));

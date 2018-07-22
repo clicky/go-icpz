@@ -6,6 +6,8 @@
 #include "goicpzSurfaceUtilsTest.h"
 #include "SurfaceRegister.h"
 
+#define Pi 3.1415926
+
 TEST_CASE("Unique Indices", "[surfaceregister]") {
     pcl::IndicesPtr sample1(new std::vector<int>());
     // Missing 0
@@ -23,7 +25,7 @@ TEST_CASE("Unique Indices", "[surfaceregister]") {
     sample1->push_back(1); // dupe
     sample1->push_back(10);
 
-    goicpz::SurfaceRegister reg;
+    goicpz::MovingSurfaceRegister reg;
     pcl::IndicesPtr res = reg.unique_indices(sample1, sample2);
 
     REQUIRE(res->size() == 8);
@@ -43,7 +45,7 @@ TEST_CASE("Unique Indices", "[surfaceregister]") {
 }
 
 TEST_CASE("PLY loader", "[surfaceregister]") {
-    goicpz::SurfaceRegister reg;
+    goicpz::MovingSurfaceRegister reg;
 
     PointCloudT::Ptr cloud(new PointCloudT());
     //reg.read_ply("/Users/murtuza/dev/CPP/dissertation/go-icpz/Testing/Data/bun000.ply", cloud);
@@ -65,8 +67,9 @@ TEST_CASE("PLY loader", "[surfaceregister]") {
 }
 
 TEST_CASE("Farthest Point Sample", "[surfaceregister]") {
-    goicpz::SurfaceRegister reg;
+    goicpz::MovingSurfaceRegister reg;
     reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
+                     "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
                      "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
 
     int sz = 100;
@@ -76,9 +79,11 @@ TEST_CASE("Farthest Point Sample", "[surfaceregister]") {
 }
 
 TEST_CASE("Normal Space Sample", "[surfaceregister]") {
-    goicpz::SurfaceRegister reg;
+    goicpz::MovingSurfaceRegister reg;
     reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
+                     "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
                      "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
+    reg.compute_surface_normals();
 
     int sz = 1300;
     pcl::IndicesPtr sample = reg.normal_space_sample(sz);
@@ -88,9 +93,11 @@ TEST_CASE("Normal Space Sample", "[surfaceregister]") {
 
 TEST_CASE("Feature selection test", "[surfaceregister]") {
 
-    goicpz::SurfaceRegister reg;
+    goicpz::MovingSurfaceRegister reg;
     reg.load_surface("/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
+                     "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply",
                      "/Users/murtuza/dev/Matlab/globalShapeMatching/output/meshForTOLDI.ply");
+    reg.compute_surface_normals();
 
     int sz = 1600;
     pcl::IndicesPtr features = reg.select_features(sz);

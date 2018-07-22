@@ -14,19 +14,27 @@ namespace goicpz {
     void SurfaceRegister::load_surface(std::string surfacePath, std::string boundaryPath) {
         read_ply(surfacePath, surface);
         read_ply(boundaryPath, boundary);
+    }
 
-        pcl::NormalEstimation<PointT,NormalT> ne;
-        ne.setInputCloud (surface);
-        ne.setRadiusSearch (0.05);
-        ne.compute(*normals);
-        copyPointCloud(*surface, *normals);
+    void MovingSurfaceRegister::load_surface(std::string surfacePath, std::string maskPath, std::string boundaryPath) {
+        SurfaceRegister::load_surface(surfacePath, boundaryPath);
+        read_ply(maskPath, mask);
     }
 
     void SurfaceRegister::read_ply(std::string path, PointCloudT::Ptr cloud) {
         if (pcl::io::loadPLYFile(path, *cloud) < 0) {
             std::cerr << "Error loading cloud " << path << std::endl;
+        } else {
+            std::cout << "Cloud loaded from " << path << std::endl;
         }
-        std::cout << "Cloud loaded from " << path << std::endl;
+    }
+
+    void SurfaceRegister::compute_surface_normals() {
+        pcl::NormalEstimation<PointT,NormalT> ne;
+        ne.setInputCloud (surface);
+        ne.setRadiusSearch (0.05);
+        ne.compute(*normals);
+        copyPointCloud(*surface, *normals);
     }
 
     // FEATURE SELECTION
@@ -41,9 +49,12 @@ namespace goicpz {
      */
     pcl::IndicesPtr SurfaceRegister::select_features(int sample_size) {
         int farthest_sz = sample_size*0.25;
+
         pcl::IndicesPtr farthest_sample = farthest_point_sample(farthest_sz);
         pcl::IndicesPtr normal_sample = normal_space_sample(sample_size-farthest_sz);
-        return unique_indices(farthest_sample, normal_sample);
+        pcl::IndicesPtr sample = unique_indices(farthest_sample, normal_sample);
+
+        return remove_boundary_points(sample);
     }
 
     pcl::IndicesPtr SurfaceRegister::farthest_point_sample(int num_samples) {
@@ -122,6 +133,10 @@ namespace goicpz {
         return indices;
     }
 
+    pcl::IndicesPtr SurfaceRegister::remove_boundary_points(pcl::IndicesPtr points) {
+        return points; //TODO
+    }
+
     /**
      * Take the unique indicies of two samples.
      *
@@ -144,16 +159,57 @@ namespace goicpz {
         return sample;
     }
 
+    PointCloudT::Ptr MovingSurfaceRegister::select_feature_points(int sample_size) {
+        feature_indexes = select_features(sample_size);
+        PointCloudT::Ptr feature_points_mask = extract_points(surface, feature_indexes);
+
+        const int K = 1;
+
+        pcl::KdTreeFLANN <PointT> kdtree;
+        kdtree.setInputCloud(mask);
+
+        pcl::IndicesPtr points(new std::vector<int>());
+
+        for (PointT point : feature_points_mask->points) {
+            std::vector<int> pointIdxNKNSearch(K);
+            std::vector<float> pointNKNSquaredDistance(K);
+
+            kdtree.nearestKSearch(point, K, pointIdxNKNSearch, pointNKNSquaredDistance);
+            points->push_back(pointIdxNKNSearch[0]);
+        }
+
+        return extract_points(mask, points);
+    }
+
+    PointCloudT::Ptr SurfaceRegister::extract_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices) {
+        PointCloudT::Ptr features(new PointCloudT);
+
+        pcl::ExtractIndices<PointT> extract;
+        extract.setInputCloud(mesh);
+        extract.setIndices(feature_indices);
+        extract.setNegative(false);
+        extract.filter(*features);
+
+        return features;
+    }
+
     // DESCRIPTORS
 
     std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features) {
-        return compute_descriptors(features, 10, 20);
+        return compute_descriptors(features, 20, 10);
     }
 
     std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features, int bins, int radius) {
-        std::vector<std::vector<float>> histograms;
-        TOLDI_compute(surface, *features, radius, bins, histograms);
-        return histograms;
+        std::vector<std::vector<float>> descriptorsToldi;
+        TOLDI_compute(surface, *features, radius, bins, descriptorsToldi);
+
+        int numFeatures = features->size();
+        Eigen::MatrixXf descriptorsToldiOut(numFeatures, descriptorsToldi[0].size());
+        for (int i = 0; i < numFeatures; i++) {
+            descriptorsToldiOut.row(i) = Eigen::VectorXf::Map(&descriptorsToldi[i][0], descriptorsToldi[i].size());
+        }
+
+        return descriptorsToldi; // TODO return Eigen Matrix?
     }
 
     // DISTANCES
@@ -172,12 +228,20 @@ namespace goicpz {
         return surface;
     }
 
+    PointCloudT::Ptr MovingSurfaceRegister::getMask() {
+        return mask;
+    }
+
     PointCloudT::Ptr SurfaceRegister::getSurfaceBoundary() {
         return boundary;
     }
 
     PointNormalCloudT::Ptr SurfaceRegister::getNormals() {
         return normals;
+    }
+
+    pcl::IndicesPtr SurfaceRegister::getFeatureIndexes() {
+        return feature_indexes;
     }
 
 }

@@ -57,7 +57,7 @@ namespace goicpz {
         pcl::IndicesPtr normal_sample = normal_space_sample(sample_size-farthest_sz);
         pcl::IndicesPtr sample = unique_indices(farthest_sample, normal_sample);
 
-        return remove_boundary_points(sample);
+        return remove_boundary_points(surface, sample);
     }
 
     pcl::IndicesPtr SurfaceRegister::farthest_point_sample(int num_samples) {
@@ -136,8 +136,28 @@ namespace goicpz {
         return indices;
     }
 
-    pcl::IndicesPtr SurfaceRegister::remove_boundary_points(pcl::IndicesPtr points) {
-        return points; //TODO
+    pcl::IndicesPtr SurfaceRegister::remove_boundary_points(PointCloudT::Ptr surface, pcl::IndicesPtr points) {
+        pcl::KdTreeFLANN <PointT> kdtree;
+        kdtree.setInputCloud(boundary);
+
+        const int K = 1;
+        pcl::IndicesPtr fixed(new std::vector<int>());
+
+        for (int i=0; i<points->size(); i++) {
+            int idx = (*points)[i];
+            PointT point = surface->points[idx];
+
+            std::vector<int> pointIdxNKNSearch(K);
+            std::vector<float> pointNKNSquaredDistance(K);
+
+            kdtree.nearestKSearch(point, K, pointIdxNKNSearch, pointNKNSquaredDistance);
+
+            if (pointNKNSquaredDistance[0] > 0) {
+                fixed->push_back(idx);
+            }
+        }
+
+        return fixed;
     }
 
     /**
@@ -162,39 +182,28 @@ namespace goicpz {
         return sample;
     }
 
-    std::vector<PointCloudT::Ptr> MovingSurfaceRegister::select_feature_points(int sample_size) {
-        feature_indexes = select_features(sample_size);
-        PointCloudT::Ptr feature_points_mask = extract_points(surface, feature_indexes);
+    pcl::IndicesPtr MovingSurfaceRegister::select_feature_points(int sample_size) {
+        // Select feature points
+        pcl::IndicesPtr idxFeatures = select_features(sample_size);
 
+        // Get feature points from mask surface using nn search
         const int K = 1;
 
         pcl::KdTreeFLANN <PointT> kdtree;
         kdtree.setInputCloud(mask);
 
-        pcl::IndicesPtr points(new std::vector<int>());
+        feature_indexes->clear();
 
-        for (PointT point : feature_points_mask->points) {
+        for (int idxFeature : (*idxFeatures)) {
             std::vector<int> pointIdxNKNSearch(K);
             std::vector<float> pointNKNSquaredDistance(K);
 
+            PointT point = surface->points[idxFeature];
             kdtree.nearestKSearch(point, K, pointIdxNKNSearch, pointNKNSquaredDistance);
-            points->push_back(pointIdxNKNSearch[0]);
+            feature_indexes->push_back(pointIdxNKNSearch[0]);
         }
 
-        pcl::IndicesPtr boundaryPoints(new std::vector<int>());
-
-        for (PointT point : boundary->points) {
-            std::vector<int> pointIdxNKNSearch(K);
-            std::vector<float> pointNKNSquaredDistance(K);
-
-            kdtree.nearestKSearch(point, K, pointIdxNKNSearch, pointNKNSquaredDistance);
-            boundaryPoints->push_back(pointIdxNKNSearch[0]);
-        }
-
-        std::vector<PointCloudT::Ptr> cloudPoints;
-        cloudPoints.push_back(extract_points(mask, points));
-        cloudPoints.push_back(extract_points(mask, boundaryPoints));
-        return cloudPoints;
+        return feature_indexes;
     }
 
     PointCloudT::Ptr SurfaceRegister::extract_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices) {
@@ -211,11 +220,11 @@ namespace goicpz {
 
     // DESCRIPTORS
 
-    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features) {
-        return compute_descriptors(features, 20, 10);
+    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features) {
+        return compute_descriptors(surface, features, 20, 10);
     }
 
-    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(pcl::IndicesPtr features, int bins, int radius) {
+    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius) {
         std::vector<std::vector<float>> descriptorsToldi;
         TOLDI_compute(surface, *features, radius, bins, descriptorsToldi);
 
@@ -231,21 +240,50 @@ namespace goicpz {
     // DISTANCES
 
     /**
-     * Compute matrix of Euclidean distances between surface points.
+     * Compute matrix of squared Euclidean distances between surface points for features.
      *
      * @param surface to compute distances for.
      * @return distance matrix.
      */
     std::vector<std::vector<float>> SurfaceRegister::compute_distances(PointCloudT::Ptr surface) {
+        distances_features.clear();
         int sz = surface->points.size();
-        std::vector<std::vector<float>> distancesAll;
         for (int i=0; i<sz; i++) {
-            distancesAll.push_back(std::vector<float>());
+            distances_features.push_back(std::vector<float>());
             for (int j=0; j<sz; j++) {
-                distancesAll[i].push_back(i == j ? 0 : pcl::geometry::distance(surface->points[i], surface->points[j]));
+                distances_features[i].push_back(i == j ? 0 :
+                                                pcl::geometry::squaredDistance(surface->points[i], surface->points[j]));
             }
         }
-        return distancesAll;
+        return distances_features;
+    }
+
+    /**
+     * Compute the distance between features on a surface and the boundary.
+     *
+     * @param surface to take features from
+     * @param feature point indexes on provided surface
+     * @return distance vector to nearest point on boundary for each surface feature
+     */
+    std::vector<float> SurfaceRegister::compute_boundary_distances(PointCloudT::Ptr surface, pcl::IndicesPtr features) {
+        distances_feature_boundary.clear();
+
+        const int K = 1;
+
+        pcl::KdTreeFLANN <PointT> kdtree;
+        kdtree.setInputCloud(boundary);
+
+        for (int idxFeature : (*features)) {
+            PointT point = surface->points[idxFeature];
+
+            std::vector<int> pointIdxNKNSearch(K);
+            std::vector<float> pointNKNSquaredDistance(K);
+
+            kdtree.nearestKSearch(point, K, pointIdxNKNSearch, pointNKNSquaredDistance);
+            distances_feature_boundary.push_back(pointNKNSquaredDistance[0]);
+        }
+
+        return distances_feature_boundary;
     }
 
     // INTERPOLATION

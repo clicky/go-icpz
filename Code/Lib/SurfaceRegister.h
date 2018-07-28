@@ -28,12 +28,17 @@ protected:
     PointNormalCloudT::Ptr normals;
 
     pcl::IndicesPtr feature_indexes;
+    pcl::IndicesPtr feature_boundary_indexes;
+
+    std::vector<std::vector<float>> distances_features;
+    std::vector<float> distances_feature_boundary;
 
     SurfaceRegister():
             surface(new PointCloudT()),
             boundary(new PointCloudT()),
             normals(new PointNormalCloudT()),
-            feature_indexes(new std::vector<int>())
+            feature_indexes(new std::vector<int>()),
+            feature_boundary_indexes(new std::vector<int>())
     {}
 
 public:
@@ -47,16 +52,17 @@ public:
     pcl::IndicesPtr farthest_point_sample(int num_samples);
     pcl::IndicesPtr normal_space_sample(int num_samples);
     pcl::IndicesPtr normal_space_sample(int num_samples, int bins, int seed);
-    pcl::IndicesPtr remove_boundary_points(pcl::IndicesPtr points);
+    pcl::IndicesPtr remove_boundary_points(PointCloudT::Ptr surface, pcl::IndicesPtr points);
     pcl::IndicesPtr unique_indices(pcl::IndicesPtr sample1, pcl::IndicesPtr sample2);
     PointCloudT::Ptr extract_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices);
 
     // Descriptors
-    std::vector<std::vector<float>> compute_descriptors(pcl::IndicesPtr features);
-    std::vector<std::vector<float>> compute_descriptors(pcl::IndicesPtr features, int bins, int radius);
+    std::vector<std::vector<float>> compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features);
+    std::vector<std::vector<float>> compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius);
 
     // Geodesic distances
     std::vector<std::vector<float>> compute_distances(PointCloudT::Ptr surface);
+    std::vector<float> compute_boundary_distances(PointCloudT::Ptr surface, pcl::IndicesPtr features);
 
     // Utils
     void save();
@@ -76,7 +82,7 @@ public:
             mask(new PointCloudT()) {}
 
     void load_surface(std::string surfacePath, std::string maskPath, std::string boundaryPath);
-    std::vector<PointCloudT::Ptr> select_feature_points(int sample_size);
+    pcl::IndicesPtr select_feature_points(int sample_size);
 
     PointCloudT::Ptr getMask();
 };

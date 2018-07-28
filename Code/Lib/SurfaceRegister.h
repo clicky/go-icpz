@@ -56,7 +56,7 @@ public:
     std::vector<std::vector<float>> compute_descriptors(pcl::IndicesPtr features, int bins, int radius);
 
     // Geodesic distances
-    void compute_distances();
+    std::vector<std::vector<float>> compute_distances(PointCloudT::Ptr surface);
 
     // Utils
     void save();
@@ -76,9 +76,19 @@ public:
             mask(new PointCloudT()) {}
 
     void load_surface(std::string surfacePath, std::string maskPath, std::string boundaryPath);
-    PointCloudT::Ptr select_feature_points(int sample_size);
+    std::vector<PointCloudT::Ptr> select_feature_points(int sample_size);
 
     PointCloudT::Ptr getMask();
+};
+
+class TargetSurfaceRegister: public SurfaceRegister {
+
+protected:
+    PointCloudT::Ptr interpolated;
+
+public:
+    PointNormalCloudT interpolate_surface();
+
 };
 
 }

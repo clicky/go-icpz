@@ -4,6 +4,9 @@
 
 #include <pcl/features/normal_3d.h>
 #include "SurfaceRegister.h"
+#include <pcl/surface/mls.h>
+#include <pcl/search/kdtree.h>
+#include <pcl/common/geometry.h>
 
 namespace goicpz {
 
@@ -159,7 +162,7 @@ namespace goicpz {
         return sample;
     }
 
-    PointCloudT::Ptr MovingSurfaceRegister::select_feature_points(int sample_size) {
+    std::vector<PointCloudT::Ptr> MovingSurfaceRegister::select_feature_points(int sample_size) {
         feature_indexes = select_features(sample_size);
         PointCloudT::Ptr feature_points_mask = extract_points(surface, feature_indexes);
 
@@ -178,7 +181,20 @@ namespace goicpz {
             points->push_back(pointIdxNKNSearch[0]);
         }
 
-        return extract_points(mask, points);
+        pcl::IndicesPtr boundaryPoints(new std::vector<int>());
+
+        for (PointT point : boundary->points) {
+            std::vector<int> pointIdxNKNSearch(K);
+            std::vector<float> pointNKNSquaredDistance(K);
+
+            kdtree.nearestKSearch(point, K, pointIdxNKNSearch, pointNKNSquaredDistance);
+            boundaryPoints->push_back(pointIdxNKNSearch[0]);
+        }
+
+        std::vector<PointCloudT::Ptr> cloudPoints;
+        cloudPoints.push_back(extract_points(mask, points));
+        cloudPoints.push_back(extract_points(mask, boundaryPoints));
+        return cloudPoints;
     }
 
     PointCloudT::Ptr SurfaceRegister::extract_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices) {
@@ -214,8 +230,45 @@ namespace goicpz {
 
     // DISTANCES
 
-    void SurfaceRegister::compute_distances() {
+    /**
+     * Compute matrix of Euclidean distances between surface points.
+     *
+     * @param surface to compute distances for.
+     * @return distance matrix.
+     */
+    std::vector<std::vector<float>> SurfaceRegister::compute_distances(PointCloudT::Ptr surface) {
+        int sz = surface->points.size();
+        std::vector<std::vector<float>> distancesAll;
+        for (int i=0; i<sz; i++) {
+            distancesAll.push_back(std::vector<float>());
+            for (int j=0; j<sz; j++) {
+                distancesAll[i].push_back(i == j ? 0 : pcl::geometry::distance(surface->points[i], surface->points[j]));
+            }
+        }
+        return distancesAll;
+    }
 
+    // INTERPOLATION
+
+    PointNormalCloudT TargetSurfaceRegister::interpolate_surface() {
+        pcl::search::KdTree<PointT>::Ptr tree (new pcl::search::KdTree<PointT>);
+        PointNormalCloudT mls_points;
+
+        pcl::MovingLeastSquares<PointT, NormalT> mls;
+
+        mls.setComputeNormals (true);
+
+        // Set parameters
+        mls.setInputCloud(surface);
+        //mls.setPolynomialOrder(2);
+        mls.setPolynomialFit (true);
+        mls.setSearchMethod(tree);
+        mls.setSearchRadius(0.03);
+
+        // Reconstruct
+        mls.process(mls_points);
+
+        return mls_points;
     }
 
     // UTILS

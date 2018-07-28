@@ -32,12 +32,19 @@ int main (int argc, char** argv) {
     reg.compute_surface_normals();
 
     // Select features
-    PointCloudT::Ptr moving_features = reg.select_feature_points(1600);
+    std::vector<PointCloudT::Ptr> moving_features = reg.select_feature_points(1500);
     // Get feature point descriptors (TOLDI)
     std::vector<std::vector<float>> moving_descriptors = reg.compute_descriptors(reg.getFeatureIndexes());
+    std::vector<std::vector<float>> distancesAll = reg.compute_distances(moving_features[0]);
+
+    TargetSurfaceRegister target;
+    target.read_ply("/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/PartialDeformed4.ply", target.getSurface());
+    target.read_ply("/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/PartialDeformed4_boundary.ply", target.getSurfaceBoundary());
+
+    PointNormalCloudT interp = target.interpolate_surface();
 
     SurfaceVisualiser vis;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = vis.simpleVis(moving_features);
+    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = vis.simpleVis(moving_features[0]);
     while (!viewer->wasStopped ())
     {
         viewer->spinOnce (100);

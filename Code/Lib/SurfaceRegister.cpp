@@ -50,7 +50,7 @@ namespace goicpz {
      * @param sample_size
      * @return sampled indices.
      */
-    pcl::IndicesPtr SurfaceRegister::select_features(int sample_size) {
+    pcl::IndicesPtr SurfaceRegister::sample_features(int sample_size) {
         int farthest_sz = sample_size*0.25;
 
         pcl::IndicesPtr farthest_sample = farthest_point_sample(farthest_sz);
@@ -182,15 +182,15 @@ namespace goicpz {
         return sample;
     }
 
-    pcl::IndicesPtr MovingSurfaceRegister::select_feature_points(int sample_size) {
+    pcl::IndicesPtr SurfaceRegister::select_feature_points(PointCloudT::Ptr surface, int sample_size) {
         // Select feature points
-        pcl::IndicesPtr idxFeatures = select_features(sample_size);
+        pcl::IndicesPtr idxFeatures = sample_features(sample_size);
 
         // Get feature points from mask surface using nn search
         const int K = 1;
 
         pcl::KdTreeFLANN <PointT> kdtree;
-        kdtree.setInputCloud(mask);
+        kdtree.setInputCloud(surface);
 
         feature_indexes->clear();
 
@@ -198,7 +198,7 @@ namespace goicpz {
             std::vector<int> pointIdxNKNSearch(K);
             std::vector<float> pointNKNSquaredDistance(K);
 
-            PointT point = surface->points[idxFeature];
+            PointT point = SurfaceRegister::surface->points[idxFeature];
             kdtree.nearestKSearch(point, K, pointIdxNKNSearch, pointNKNSquaredDistance);
             feature_indexes->push_back(pointIdxNKNSearch[0]);
         }
@@ -220,11 +220,11 @@ namespace goicpz {
 
     // DESCRIPTORS
 
-    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features) {
+    Eigen::MatrixXf SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features) {
         return compute_descriptors(surface, features, 20, 10);
     }
 
-    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius) {
+    Eigen::MatrixXf SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius) {
         std::vector<std::vector<float>> descriptorsToldi;
         TOLDI_compute(surface, *features, radius, bins, descriptorsToldi);
 
@@ -234,7 +234,7 @@ namespace goicpz {
             descriptorsToldiOut.row(i) = Eigen::VectorXf::Map(&descriptorsToldi[i][0], descriptorsToldi[i].size());
         }
 
-        return descriptorsToldi; // TODO return Eigen Matrix?
+        return descriptorsToldiOut;
     }
 
     // DISTANCES

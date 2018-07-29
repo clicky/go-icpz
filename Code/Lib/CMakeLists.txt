@@ -21,7 +21,7 @@ set(GOICPZ_LIBRARY_SRCS
   goicpzSurfaceUtils.cpp
   TOLDI_descriptor.cpp
   TOLDI_LRF.cpp
-  SurfaceRegister.cpp SurfaceRegister.h SurfaceVisualiser.cpp SurfaceVisualiser.h)
+  SurfaceRegister.cpp SurfaceRegister.h SurfaceVisualiser.cpp SurfaceVisualiser.h GlobalRegister.cpp GlobalRegister.h)
 
 set(GOICPZ_LIBRARY_HDRS
   goicpzExceptionMacro.h

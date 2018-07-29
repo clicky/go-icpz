@@ -48,7 +48,8 @@ public:
     void compute_surface_normals();
 
     // Feature selection
-    pcl::IndicesPtr select_features(int sample_size);
+    pcl::IndicesPtr select_feature_points(PointCloudT::Ptr surface, int sample_size);
+    pcl::IndicesPtr sample_features(int sample_size);
     pcl::IndicesPtr farthest_point_sample(int num_samples);
     pcl::IndicesPtr normal_space_sample(int num_samples);
     pcl::IndicesPtr normal_space_sample(int num_samples, int bins, int seed);
@@ -57,8 +58,8 @@ public:
     PointCloudT::Ptr extract_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices);
 
     // Descriptors
-    std::vector<std::vector<float>> compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features);
-    std::vector<std::vector<float>> compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius);
+    Eigen::MatrixXf compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features);
+    Eigen::MatrixXf compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius);
 
     // Geodesic distances
     std::vector<std::vector<float>> compute_distances(PointCloudT::Ptr surface);
@@ -82,7 +83,6 @@ public:
             mask(new PointCloudT()) {}
 
     void load_surface(std::string surfacePath, std::string maskPath, std::string boundaryPath);
-    pcl::IndicesPtr select_feature_points(int sample_size);
 
     PointCloudT::Ptr getMask();
 };

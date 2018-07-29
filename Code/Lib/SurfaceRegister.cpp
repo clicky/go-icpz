@@ -220,21 +220,14 @@ namespace goicpz {
 
     // DESCRIPTORS
 
-    Eigen::MatrixXf SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features) {
+    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features) {
         return compute_descriptors(surface, features, 20, 10);
     }
 
-    Eigen::MatrixXf SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius) {
+    std::vector<std::vector<float>> SurfaceRegister::compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius) {
         std::vector<std::vector<float>> descriptorsToldi;
         TOLDI_compute(surface, *features, radius, bins, descriptorsToldi);
-
-        int numFeatures = features->size();
-        Eigen::MatrixXf descriptorsToldiOut(numFeatures, descriptorsToldi[0].size());
-        for (int i = 0; i < numFeatures; i++) {
-            descriptorsToldiOut.row(i) = Eigen::VectorXf::Map(&descriptorsToldi[i][0], descriptorsToldi[i].size());
-        }
-
-        return descriptorsToldiOut;
+        return descriptorsToldi;
     }
 
     // DISTANCES

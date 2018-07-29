@@ -32,14 +32,18 @@ namespace goicpz {
         pcl::IndicesPtr target_features_idx;
 
         // Feature descriptors
-        Eigen::MatrixXf moving_descriptors;
-        Eigen::MatrixXf target_descriptors;
+        std::vector<std::vector<float>> moving_descriptors;
+        std::vector<std::vector<float>> target_descriptors;
 
         // Feature distances
         std::vector<std::vector<float>> moving_feature_distances;
         std::vector<float> moving_boundary_distances;
         std::vector<std::vector<float>> target_feature_distances;
         std::vector<float> target_boundary_distances;
+
+        // Initial correspondeces
+        flann::Matrix<int> ic_indexes;
+        flann::Matrix<float> ic_distances;
 
     public:
         GlobalRegister(float alpha, float epsilon) {
@@ -55,11 +59,10 @@ namespace goicpz {
 
         void buildCorrespondeces();
 
-        void buildAffinityMatrix();
-        float getContourConstraint(PointT mi, PointT mj, PointT ti, PointT tj);
-        float applyRigidityRegulator(PointT mi, PointT mj, PointT ti, PointT tj, float sigma);
-        float correspondence(PointT mi, PointT mj, PointT ti, PointT tj);
-        float geodesicDistance(PointT i, PointT j);
+        flann::Matrix<float> buildAffinityMatrix(float sigma);
+        float getContourConstrafloat(float mb_i, float mb_j, float tb_i, float tb_j, float sigma);
+        float applyRigidityRegulator(float m_ij, float t_ij, float sigma);
+        float correspondence(float m_ij, float t_ij);
     };
 
 }

@@ -10,6 +10,7 @@
 #include <pcl/filters/normal_space.h>
 #include <pcl/filters/normal_refinement.h>
 #include <pcl/filters/sampling_surface_normal.h>
+#include <flann/flann.hpp>
 
 typedef pcl::PointXYZ PointT;
 typedef pcl::PointCloud<PointT> PointCloudT;
@@ -58,8 +59,8 @@ public:
     PointCloudT::Ptr extract_points(PointCloudT::Ptr mesh, pcl::IndicesPtr feature_indices);
 
     // Descriptors
-    Eigen::MatrixXf compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features);
-    Eigen::MatrixXf compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius);
+    std::vector<std::vector<float>> compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features);
+    std::vector<std::vector<float>> compute_descriptors(PointCloudT::Ptr surface, pcl::IndicesPtr features, int bins, int radius);
 
     // Geodesic distances
     std::vector<std::vector<float>> compute_distances(PointCloudT::Ptr surface);

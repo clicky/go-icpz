@@ -18,8 +18,10 @@ set(GOICPZ_LIBRARY_SRCS
   goicpzBasicTypes.cpp
   goicpzMyFunctions.cpp
   goicpzException.cpp
-  goicpzPclIcp.cpp
-)
+  goicpzSurfaceUtils.cpp
+  TOLDI_descriptor.cpp
+  TOLDI_LRF.cpp
+  SurfaceRegister.cpp SurfaceRegister.h SurfaceVisualiser.cpp SurfaceVisualiser.h GlobalRegister.cpp GlobalRegister.h nanoflann.hpp)
 
 set(GOICPZ_LIBRARY_HDRS
   goicpzExceptionMacro.h

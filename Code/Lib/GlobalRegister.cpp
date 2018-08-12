@@ -10,6 +10,7 @@
 #include <pcl/sample_consensus/ransac.h>
 #include <pcl/sample_consensus/sac_model_plane.h>
 #include <pcl/sample_consensus/sac_model_sphere.h>
+#include <omp.h>
 
 namespace goicpz {
 
@@ -85,6 +86,7 @@ namespace goicpz {
         flann::Matrix<float> moving_dataset(new float[moving_rows*moving_cols], moving_rows, moving_cols);
         flann::Matrix<float> target_dataset(new float[target_rows*target_cols], target_rows, target_cols);
 
+        #pragma omp parallel num_threads(2) {
         for (int i=0; i < moving_rows; i++) {
             for (int j=0; j<moving_cols; j++) {
                 moving_dataset[i][j] = moving_descriptors[i][j];
@@ -95,6 +97,7 @@ namespace goicpz {
             for (int j=0; j<target_cols; j++) {
                 target_dataset[i][j] = target_descriptors[i][j];
             }
+        }
         }
 
         int nn = 2;
@@ -237,7 +240,9 @@ namespace goicpz {
             Eigen::MatrixXf W, float rigidity_threshold, pcl::IndicesPtr &moving_correspondence,
             pcl::IndicesPtr &target_correspondence
     ) {
+        #pragma omp parallel {
         Eigen::JacobiSVD<Eigen::MatrixXf> svd(W, Eigen::ComputeThinU | Eigen::ComputeThinV);
+        };
         std::cout << "SVD computed" << std::endl;
 
         Eigen::MatrixXf U = svd.matrixU();

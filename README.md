@@ -12,7 +12,28 @@ Features
 
 The main features provided are:
 
-TBD
+Rigid global registration between two point clouds using based on the paper
+
+```
+@article{1,
+	Author = {Maria Robu and Joao Ramalhinho and Stephen Thompson and Kurinchi Gurusamy and Brian Davidson and David Hawkes and Danail Stoyanov and Matthew Clarkson},
+	Date-Added = {2018-08-04 07:23:28 +0000},
+	Date-Modified = {2018-08-04 17:15:19 +0000},
+	Journal = {International Journal of Computer Assisted Radiology and Surgery},
+	Pages = {947-956},
+	Title = {Global rigid registration of CT to video in laparoscopic liver surgery},
+	Volume = {13},
+	Year = {2018},
+}
+```
+
+
+Dependencies
+------------
+
+ * PCL
+ * Eigen
+ * FLANN
 
 
 Usage
@@ -20,19 +41,25 @@ Usage
 
 The main way to use this project is:
 
-TBD
+```C++
+int sampleSize = 600;
 
+GlobalRegister rigid(1, 0.0001);
+rigid.loadMoving("InitialCT_top.ply", "InitialCT_top.ply", "InitialCT_boundary.ply");
+rigid.preProcessMoving(sampleSize);
 
-A Note on Packaging
--------------------
+rigid.loadTarget("PartialDeformed4.ply", "PartialDeformed4_boundary.ply");
+rigid.processTarget(sampleSize);
 
-TBD
+rigid.buildCorrespondeces();
 
+Eigen::MatrixXf W = rigid.buildAffinityMatrix(0.3);
 
-Supported Use-Cases
--------------------
+pcl::IndicesPtr moving_correspondence(new std::vector<int>);
+pcl::IndicesPtr target_correspondence(new std::vector<int>);
 
-TBD
+rigid.prune_correspondence(W, 0.4, moving_correspondence, target_correspondence);
+```
 
 
 Tested On

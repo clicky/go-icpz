@@ -13,13 +13,25 @@
 
 namespace goicpz {
 
-
+    /**
+     * Load PLY files into point clouds for the moving surface.
+     *
+     * @param pathToSurface
+     * @param pathToMask
+     * @param pathToBoundary
+     */
     void GlobalRegister::loadMoving(std::string pathToSurface, std::string pathToMask, std::string pathToBoundary) {
         moving.read_ply(pathToSurface, moving.getSurface());
         moving.read_ply(pathToMask, moving.getMask());
         moving.read_ply(pathToBoundary, moving.getSurfaceBoundary());
     }
 
+    /**
+     * Pre process moving surface by selecting features, computing their descriptors and the pairwise distance
+     * constraints. Uses a combination of normal space and farthest point sampling for feature selection.
+     *
+     * @param sampleSize
+     */
     void GlobalRegister::preProcessMoving(int sampleSize) {
         // Estimate surface normals
         moving.compute_surface_normals();
@@ -36,11 +48,19 @@ namespace goicpz {
         moving_boundary_distances = moving.compute_boundary_distances(moving.getSurface(), moving.getFeatureIndexes());
     }
 
+    /**
+     * Load the target surface from PLY files.
+     */
     void GlobalRegister::loadTarget(std::string pathToSurface, std::string pathToBoundary) {
         target.read_ply(pathToSurface, target.getSurface());
         target.read_ply(pathToBoundary, target.getSurfaceBoundary());
     }
 
+    /**
+     * Process the target surface by selecting features, building their descriptors and pairwise distances.
+     *
+     * @param sampleSize
+     */
     void GlobalRegister::processTarget(int sampleSize) {
         target.compute_surface_normals();
 
@@ -52,6 +72,9 @@ namespace goicpz {
         target_boundary_distances = target.compute_boundary_distances(target.getSurface(), target.getFeatureIndexes());
     }
 
+    /**
+     * Build the initial correspondence from features selected from the moving and target surfaces.
+     */
     void GlobalRegister::buildCorrespondeces() {
         int moving_rows = moving_descriptors.size();
         int moving_cols = moving_descriptors[0].size();
@@ -89,13 +112,15 @@ namespace goicpz {
     }
 
     /**
-     * W
+     * Compute the affinity matrix W for the intial correspondence
      *
      * i == j
      * W_ij = sim(f(m_i),f(t_i)
      *
      * i != j
      * W_ij = alpha * g_d(m_i,m_j,t_i,t_j,sigma_d) + (1-alpha) * g_b(m_i,m_j,t_i,t_j,sigma_b)
+     *
+     * @param sigma
      */
     Eigen::MatrixXf GlobalRegister::buildAffinityMatrix(float sigma) {
         int rows = ic_indexes.rows;
@@ -169,6 +194,14 @@ namespace goicpz {
         return i > j;
     }
 
+    /**
+     * Vector sorting with ID's of the original elements in sorted order.
+     *
+     * @param unsorted original array to be sorted
+     * @param sorted array to store result
+     * @param idx id's original array in order of result
+     * @param side 1 for ascending sort or 2 for descending sort
+     */
     void sort(Eigen::VectorXf unsorted, std::vector<float> &sorted, std::vector<int> &idx, int side) {
         std::map<float, int> mp;
         const int sz = unsorted.size();
@@ -191,6 +224,15 @@ namespace goicpz {
         sort(unsorted, sorted, idx, 2);
     }
 
+    /**
+     * Prune the initial correspondence by performing spectral analysis on the affinity matrix W.
+     * The final correspondence for both the moving and target surfaces is stored in the provided vectors.
+     *
+     * @param W
+     * @param rigidity_threshold
+     * @param moving_correspondence vector pointer for correspondence of points on moving surface.
+     * @param target_correspondence vector pointer for correspondence of points on target surface.
+     */
     void GlobalRegister::prune_correspondence(
             Eigen::MatrixXf W, float rigidity_threshold, pcl::IndicesPtr &moving_correspondence,
             pcl::IndicesPtr &target_correspondence
@@ -230,6 +272,13 @@ namespace goicpz {
         }
     }
 
+    /**
+     * Estimate the rigid transformation between the final correspondences and return the transformed moving surface.
+     *
+     * @param moving_correspondence
+     * @param target_correspondence
+     * @return transformed moving surface.
+     */
     PointCloudT::Ptr GlobalRegister::transform(pcl::IndicesPtr moving_correspondence, pcl::IndicesPtr target_correspondence) {
         PointCloudT::Ptr mc (new PointCloudT);
         mc->width = ic_indexes.rows;

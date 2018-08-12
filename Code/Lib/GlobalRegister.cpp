@@ -86,14 +86,17 @@ namespace goicpz {
         flann::Matrix<float> moving_dataset(new float[moving_rows*moving_cols], moving_rows, moving_cols);
         flann::Matrix<float> target_dataset(new float[target_rows*target_cols], target_rows, target_cols);
 
-        #pragma omp parallel num_threads(2) {
+        #pragma omp parallel num_threads(2)
         for (int i=0; i < moving_rows; i++) {
+            #pragma omp parallel num_threads(2)
             for (int j=0; j<moving_cols; j++) {
                 moving_dataset[i][j] = moving_descriptors[i][j];
             }
         }
 
+        #pragma omp parallel num_threads(2)
         for (int i=0; i < target_rows; i++) {
+            #pragma omp parallel num_threads(2)
             for (int j=0; j<target_cols; j++) {
                 target_dataset[i][j] = target_descriptors[i][j];
             }
@@ -240,9 +243,9 @@ namespace goicpz {
             Eigen::MatrixXf W, float rigidity_threshold, pcl::IndicesPtr &moving_correspondence,
             pcl::IndicesPtr &target_correspondence
     ) {
-        #pragma omp parallel {
+        #pragma omp task shared(W)
         Eigen::JacobiSVD<Eigen::MatrixXf> svd(W, Eigen::ComputeThinU | Eigen::ComputeThinV);
-        };
+        #pragma omp taskwait
         std::cout << "SVD computed" << std::endl;
 
         Eigen::MatrixXf U = svd.matrixU();

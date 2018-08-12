@@ -16,7 +16,7 @@ namespace goicpz {
 
     class SurfaceVisualiser {
     public:
-        boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (PointCloudT::Ptr cloud);
+        boost::shared_ptr<pcl::visualization::PCLVisualizer> simpleVis (PointCloudT::Ptr cloud1, PointCloudT::Ptr cloud2);
 
     };
 

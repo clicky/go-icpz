@@ -100,8 +100,8 @@ TEST_CASE("Feature selection test", "[surfaceregister]") {
     reg.compute_surface_normals();
 
     int sz = 1600;
-    pcl::IndicesPtr features = reg.select_features(sz);
-    std::vector<std::vector<float>> desc = reg.compute_descriptors(features);
+    pcl::IndicesPtr features = reg.select_feature_points(reg.getSurface(), sz);
+    std::vector<std::vector<float>> desc = reg.compute_descriptors(reg.getSurface(), features);
 
     REQUIRE(features->size() <= sz);
     REQUIRE(features->size() == desc.size());

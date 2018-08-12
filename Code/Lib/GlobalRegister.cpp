@@ -6,6 +6,10 @@
 #include "math.h"
 #include "nanoflann.hpp"
 #include <flann/flann.hpp>
+#include <pcl/common/transforms.h>
+#include <pcl/sample_consensus/ransac.h>
+#include <pcl/sample_consensus/sac_model_plane.h>
+#include <pcl/sample_consensus/sac_model_sphere.h>
 
 namespace goicpz {
 
@@ -16,20 +20,20 @@ namespace goicpz {
         moving.read_ply(pathToBoundary, moving.getSurfaceBoundary());
     }
 
-    void GlobalRegister::preProcessMoving() {
+    void GlobalRegister::preProcessMoving(int sampleSize) {
         // Estimate surface normals
         moving.compute_surface_normals();
 
         // Select features
-        moving_features_idx = moving.select_feature_points(moving.getMask(), 1500);
+        moving_features_idx = moving.select_feature_points(moving.getSurface(), sampleSize);
 
         // Get feature point descriptors (TOLDI)
-        moving_descriptors = moving.compute_descriptors(moving.getMask(), moving_features_idx);
+        moving_descriptors = moving.compute_descriptors(moving.getSurface(), moving_features_idx);
 
         // Distances
-        PointCloudT::Ptr moving_featureSurface = moving.extract_points(moving.getMask(), moving_features_idx);
+        PointCloudT::Ptr moving_featureSurface = moving.extract_points(moving.getSurface(), moving_features_idx);
         moving_feature_distances = moving.compute_distances(moving_featureSurface);
-        moving_boundary_distances = moving.compute_boundary_distances(moving.getMask(), moving.getFeatureIndexes());
+        moving_boundary_distances = moving.compute_boundary_distances(moving.getSurface(), moving.getFeatureIndexes());
     }
 
     void GlobalRegister::loadTarget(std::string pathToSurface, std::string pathToBoundary) {
@@ -37,10 +41,10 @@ namespace goicpz {
         target.read_ply(pathToBoundary, target.getSurfaceBoundary());
     }
 
-    void GlobalRegister::processTarget() {
+    void GlobalRegister::processTarget(int sampleSize) {
         target.compute_surface_normals();
 
-        target_features_idx = target.select_feature_points(target.getSurface(), 1500);
+        target_features_idx = target.select_feature_points(target.getSurface(), sampleSize);
         target_descriptors = target.compute_descriptors(target.getSurface(), target_features_idx);
 
         PointCloudT::Ptr target_featureSurface = target.extract_points(target.getSurface(), target_features_idx);
@@ -80,12 +84,6 @@ namespace goicpz {
         // do a knn search, using 128 checks
         index.knnSearch(target_dataset, indices, dists, nn, flann::SearchParams(128));
 
-        // 1st col: idx features in target mdoel
-        // 2nd col: corresponding idx in moving model
-        // 3rd col: distance between the corresponding descriptors
-        //int rows = indices.rows*nn;
-        //flann::Matrix<float> candidates(new int float[rows*3], rows, 3);
-
         ic_indexes = indices;
         ic_distances = dists;
     }
@@ -99,17 +97,17 @@ namespace goicpz {
      * i != j
      * W_ij = alpha * g_d(m_i,m_j,t_i,t_j,sigma_d) + (1-alpha) * g_b(m_i,m_j,t_i,t_j,sigma_b)
      */
-    flann::Matrix<float> GlobalRegister::buildAffinityMatrix(float sigma) {
+    Eigen::MatrixXf GlobalRegister::buildAffinityMatrix(float sigma) {
         int rows = ic_indexes.rows;
         int cols = ic_indexes.rows;
 
-        flann::Matrix<float> W(new float[rows*cols], rows, cols);
+        Eigen::MatrixXf W(rows, cols);
 
         for (int i=0; i<rows; i++) {
             int col = i >= rows ? 1 : 0;
             for (int j=0; j<cols; j++) {
                 if (i == j) {
-                    W[i][j] = ic_distances[i][col];
+                    W(i, j) = ic_distances[i][col];
                 } else {
                     int idx_mi = ic_indexes[i][0];
                     int idx_mj = ic_indexes[j][0];
@@ -125,7 +123,7 @@ namespace goicpz {
                     float dbti = target_boundary_distances[idx_ti];
                     float dbtj = target_boundary_distances[idx_tj];
 
-                    W[i][j] = _alpha * applyRigidityRegulator(dm, dt, sigma) +
+                    W(i, j) = _alpha * applyRigidityRegulator(dm, dt, sigma) +
                               (1 - _alpha) * getContourConstrafloat(dbmi, dbmj, dbti, dbtj, sigma);
                 }
             }
@@ -161,5 +159,143 @@ namespace goicpz {
         float a = m_ij / (t_ij + _epsilon);
         float b = t_ij / (m_ij + _epsilon);
         return std::min(a, b);
+    }
+
+    bool asc_comp(float i, float j) {
+        return i < j;
+    }
+
+    bool desc_comp(float i, float j) {
+        return i > j;
+    }
+
+    void sort(Eigen::VectorXf unsorted, std::vector<float> &sorted, std::vector<int> &idx, int side) {
+        std::map<float, int> mp;
+        const int sz = unsorted.size();
+        for (int i=0; i<sz; i++) {
+            float val = unsorted(i);
+            sorted.push_back(val);
+            mp[val] = i;
+        }
+        std::sort(sorted.begin(), sorted.end(), side == 1 ? asc_comp : desc_comp);
+        for (int i=0; i<sz; i++) {
+            idx.push_back(mp[sorted[i]]);
+        }
+    }
+
+    void sort_asc(Eigen::VectorXf unsorted, std::vector<float> &sorted, std::vector<int> &idx) {
+        sort(unsorted, sorted, idx, 1);
+    }
+
+    void sort_desc(Eigen::VectorXf unsorted, std::vector<float> &sorted, std::vector<int> &idx) {
+        sort(unsorted, sorted, idx, 2);
+    }
+
+    void GlobalRegister::prune_correspondence(
+            Eigen::MatrixXf W, float rigidity_threshold, pcl::IndicesPtr &moving_correspondence,
+            pcl::IndicesPtr &target_correspondence
+    ) {
+        Eigen::JacobiSVD<Eigen::MatrixXf> svd(W, Eigen::ComputeThinU | Eigen::ComputeThinV);
+        std::cout << "SVD computed" << std::endl;
+
+        Eigen::MatrixXf U = svd.matrixU();
+        Eigen::VectorXf lead_eig = U.col(0);
+
+        const int sz = lead_eig.size();
+        bool final [sz];
+
+        std::vector<float> sorted;
+        std::vector<int> idx;
+        sort_desc(lead_eig, sorted, idx);
+
+        int final_sz = 0;
+        std::vector<float> confidence_matches;
+
+        for (int i=0; i<sz; i++) {
+            if (final[i] == false) {
+                Eigen::VectorXf v = W.col(i);
+                for (int j=0; j<v.size(); j++) {
+                    if (v[j] > rigidity_threshold) {
+                        confidence_matches.push_back(lead_eig[j]);
+                        idx.push_back(j);
+                        int k = ic_indexes[j][0];
+                        moving_correspondence->push_back((*moving_features_idx)[k]);
+                        target_correspondence->push_back((*target_features_idx)[k]);
+                        final_sz++;
+                    } else {
+                        final[j] = true;
+                    }
+                }
+            }
+        }
+    }
+
+    PointCloudT::Ptr GlobalRegister::transform(pcl::IndicesPtr moving_correspondence, pcl::IndicesPtr target_correspondence) {
+        PointCloudT::Ptr mc (new PointCloudT);
+        mc->width = ic_indexes.rows;
+        mc->height = 1;
+        mc->is_dense = false;
+        mc->resize(mc->width * mc->height);
+
+        PointCloudT::Ptr tc (new PointCloudT);
+        tc->width = ic_indexes.rows;
+        tc->height = 1;
+        tc->is_dense = false;
+        tc->resize(tc->width * tc->height);
+
+        for (int i=0; i<moving_correspondence->size(); i++) {
+            int idx = (*target_correspondence)[i];
+            if (idx < ic_indexes.rows) {
+                mc->points[i] = moving.getSurface()->points[idx];
+                tc->points[i] = target.getSurface()->points[idx];
+            }
+        }
+
+        pcl::registration::TransformationEstimationSVD<pcl::PointXYZ,pcl::PointXYZ> TESVD;
+        pcl::registration::TransformationEstimationSVD<pcl::PointXYZ,pcl::PointXYZ>::Matrix4 transformation2;
+        TESVD.estimateRigidTransformation (*mc,*tc,transformation2);
+
+        //PointCloudT::Ptr m = moving.extract_points(moving.getMask(), ic_indexes);
+        //PointCloudT::Ptr t = target.extract_points(target.getSurface(), ic_indexes);
+
+        printf ("    | %6.3f %6.3f %6.3f | \n", transformation2 (0,0), transformation2 (0,1), transformation2 (0,2));
+        printf ("R = | %6.3f %6.3f %6.3f | \n", transformation2 (1,0), transformation2 (1,1), transformation2 (1,2));
+        printf ("    | %6.3f %6.3f %6.3f | \n", transformation2 (2,0), transformation2 (2,1), transformation2 (2,2));
+        printf ("\n");
+        printf ("t = < %0.3f, %0.3f, %0.3f >\n", transformation2 (0,3), transformation2 (1,3), transformation2 (2,3));
+
+        Eigen::Matrix3d r;
+        r(0,0) = transformation2(0,0);
+        r(0,0) = transformation2(0,1);
+        r(0,0) = transformation2(0,2);
+        r(0,0) = transformation2(1,0);
+        r(0,0) = transformation2(1,1);
+        r(0,0) = transformation2(1,2);
+        r(0,0) = transformation2(2,0);
+        r(0,0) = transformation2(2,1);
+        r(0,0) = transformation2(2,2);
+
+        PointCloudT::Ptr tt (new PointCloudT);
+        tt->width = ic_indexes.rows;
+        tt->height = 1;
+        tt->is_dense = false;
+        tt->resize(tt->width * tt->height);
+        for (int i=0; i<ic_indexes.rows; i++) {
+            PointT p = mc->points[i];
+
+            Eigen::Vector3d vp;
+            vp(0) = p.x;
+            vp(1) = p.y;
+            vp(2) = p.z;
+
+            Eigen::Vector3d res = r * vp;
+
+            tt->points[i].x = res(0) + transformation2(0,3);
+            tt->points[i].y = res(1) + transformation2(1,3);
+            tt->points[i].z = res(2) + transformation2(2,3);
+
+        }
+
+        return tt;
     }
 }

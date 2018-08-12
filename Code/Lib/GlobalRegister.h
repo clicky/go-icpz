@@ -6,6 +6,7 @@
 #define GOICPZ_SUPERBUILD_GLOBALREGISTER_H
 
 #include <SurfaceRegister.h>
+#include <SurfaceVisualiser.h>
 
 using namespace goicpz;
 
@@ -23,9 +24,7 @@ namespace goicpz {
      * M = moving pre operative point cloud
      * T = target intra-operative point cloud
      */
-    protected:
-        MovingSurfaceRegister moving;
-        TargetSurfaceRegister target;
+    public:
 
         // Feature indexes
         pcl::IndicesPtr moving_features_idx;
@@ -45,24 +44,29 @@ namespace goicpz {
         flann::Matrix<int> ic_indexes;
         flann::Matrix<float> ic_distances;
 
-    public:
+        MovingSurfaceRegister moving;
+        TargetSurfaceRegister target;
+
         GlobalRegister(float alpha, float epsilon) {
             _alpha = alpha;
             _epsilon = epsilon;
         }
 
         void loadMoving(std::string pathToSurface, std::string pathToMask, std::string pathToBoundary);
-        void preProcessMoving();
+        void preProcessMoving(int sampleSize);
 
         void loadTarget(std::string pathToSurface, std::string pathToBoundary);
-        void processTarget();
+        void processTarget(int sampleSize);
 
         void buildCorrespondeces();
 
-        flann::Matrix<float> buildAffinityMatrix(float sigma);
+        Eigen::MatrixXf buildAffinityMatrix(float sigma);
         float getContourConstrafloat(float mb_i, float mb_j, float tb_i, float tb_j, float sigma);
         float applyRigidityRegulator(float m_ij, float t_ij, float sigma);
         float correspondence(float m_ij, float t_ij);
+
+        void prune_correspondence(Eigen::MatrixXf W, float rigidity_threshold, pcl::IndicesPtr &moving_correspondence, pcl::IndicesPtr &target_correspondence);
+        PointCloudT::Ptr transform(pcl::IndicesPtr moving_correspondence, pcl::IndicesPtr target_correspondence);
     };
 
 }

@@ -13,34 +13,54 @@
 #include <pcl/point_types.h>
 #include <pcl/common/projection_matrix.h>
 #include <SurfaceRegister.h>
-#include <SurfaceVisualiser.h>
+#include <boost/timer.hpp>
 
 using namespace goicpz;
 
 
 
 int main (int argc, char** argv) {
+    boost::timer timer;
+    int sampleSize = 600;
 
     GlobalRegister rigid(1, 0.0001);
-    rigid.loadMoving("/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/InitialConfigurationSegmentedSurface.ply",
+    rigid.loadMoving("/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/InitialCT_top.ply",
                      "/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/InitialCT_top.ply",
                      "/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/InitialCT_boundary.ply");
-    rigid.preProcessMoving();
+    rigid.preProcessMoving(sampleSize);
+    std::cout << timer.elapsed() << std::endl;
+    timer.restart();
 
     rigid.loadTarget("/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/PartialDeformed4.ply",
                      "/Users/murtuza/dev/Matlab/data/IPCAI2018Data/reform/PartialDeformed4_boundary.ply");
-    rigid.processTarget();
+    rigid.processTarget(sampleSize);
+    std::cout <<  timer.elapsed() << std::endl;
+    timer.restart();
 
     rigid.buildCorrespondeces();
-    flann::Matrix<float> W = rigid.buildAffinityMatrix(0.3);
+    std::cout <<  timer.elapsed() << std::endl;
+    timer.restart();
 
-    /*SurfaceVisualiser vis;
-    boost::shared_ptr<pcl::visualization::PCLVisualizer> viewer = vis.simpleVis(moving_featureSurface);
-    while (!viewer->wasStopped ())
-    {
-        viewer->spinOnce (100);
-        boost::this_thread::sleep (boost::posix_time::microseconds (100000));
-    }*/
+    Eigen::MatrixXf W = rigid.buildAffinityMatrix(0.3);
+    std::cout <<  timer.elapsed() << std::endl;
+    timer.restart();
+
+    pcl::IndicesPtr moving_correspondence(new std::vector<int>);
+    pcl::IndicesPtr target_correspondence(new std::vector<int>);
+
+    rigid.prune_correspondence(W, 0.4, moving_correspondence, target_correspondence);
+    std::cout << "Prune " <<  timer.elapsed() << std::endl;
+    timer.restart();
+
+    std::cout << rigid.moving_features_idx->size() << std::endl;
+
+    int x = 9;
+
+    /*PointCloudT::Ptr res = rigid.transform(moving_correspondence, target_correspondence);
+    std::cout << "Transform " <<  timer.elapsed() << std::endl;
+    timer.restart();*/
+
+
 
     return 0;
 }
